@@ -3,6 +3,10 @@
 # Cinnamon
 dconf load /org/cinnamon/ < configs/cinnamon-dconf
 
+# Vim
+sudo dnf install vim
+ln -sf "$PWD/configs/vimrc" ~/.vimrc
+
 # Git Configuration
 git config --global credential.helper "cache --timeout=3600"
 git config --global push.default simple
