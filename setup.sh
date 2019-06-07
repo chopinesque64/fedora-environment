@@ -12,6 +12,8 @@ sudo ln -sf "$PWD/configs/post-commit" /usr/share/git-core/templates/hooks/
 # Guake
 sudo dnf install guake
 sudo ln -sf /usr/share/applications/guake.desktop ~/.config/autostart/
+gconftool-2 --load configs/apps-guake.xml
+gconftool-2 --load configs/schemas-apps-guake.xml
 
 # Docker
 sudo dnf install docker docker-compose
