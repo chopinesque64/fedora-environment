@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# Cinnamon
+dconf load /org/cinnamon/ < configs/cinnamon-dconf
+
 # Git Configuration
 git config --global credential.helper "cache --timeout=3600"
 git config --global push.default simple
