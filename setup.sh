@@ -19,6 +19,7 @@ sudo systemctl enable docker
 # Zsh
 sudo dnf install zsh
 sudo ln -sf "$PWD/configs/zshrc.system" /etc/zshrc
+sudo ln -sf "$PWD/configs/zshrc.local" ~/.zshrc
 chsh --shell $(which zsh) $USER
 
 # Emacs
