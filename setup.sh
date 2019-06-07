@@ -26,3 +26,7 @@ chsh --shell $(which zsh) $USER
 sudo dnf install emacs
 mkdir ~/.emacs.d
 ln -sf "$PWD/configs/init.el" ~/.emacs.d/
+
+# Firefox
+sudo dnf install firefox
+ln -sf "$PWD/configs/user.js" $(find ~/.mozilla/firefox -type d -name "*.default" -print -quit)
