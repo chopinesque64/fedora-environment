@@ -1,1 +1,4 @@
 export GPG_TTY=$(tty)
+
+alias vi="vim"
+export EDITOR=vim
