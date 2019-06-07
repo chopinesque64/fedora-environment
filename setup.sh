@@ -7,6 +7,7 @@ git config --global user.email ngentry1@liberty.edu
 git config --global user.name "Nathanael Gentry"
 git config --global user.signingkey 4C7C95EC9EF26D41 
 git config --global commit.gpgsign true
+sudo ln -sf "$PWD/configs/post-commit" /usr/share/git-core/templates/hooks/
 
 # Guake
 sudo dnf install guake
