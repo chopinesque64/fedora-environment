@@ -1,4 +1,6 @@
 export GPG_TTY=$(tty)
 
+export PATH="$HOME/.cargo/bin:$PATH"
+
 alias vi="vim"
 export EDITOR=vim

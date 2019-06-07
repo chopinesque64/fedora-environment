@@ -1,13 +1,21 @@
 #!/bin/sh
 
 # Package Installation
-sudo dnf install vim \
+sudo dnf install curl \ 
+vim \
 guake \
 docker \
 docker-compose \
 zsh \
 emacs \
-firefox
+firefox \
+gcc
+
+# Rust
+type rustup >/dev/null 2>&1 || curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+rustup toolchain add nightly
+cargo +nightly install racer
+rustup component add rust-src
 
 # Cinnamon
 dconf load /org/cinnamon/ < configs/cinnamon-dconf
