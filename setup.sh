@@ -52,6 +52,7 @@ chsh --shell $(which zsh) $USER
 # Emacs
 mkdir ~/.emacs.d
 ln -sf "$PWD/configs/init.el" ~/.emacs.d/
+sudo ln -sf /usr/share/applications/emacs.desktop ~/.config/autostart/
 
 # Firefox
 ln -sf "$PWD/configs/user.js" $(find ~/.mozilla/firefox -type d -name "*.default" -print -quit)

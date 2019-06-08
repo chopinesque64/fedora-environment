@@ -6,7 +6,7 @@
 (tool-bar-mode 0)
 (scroll-bar-mode 0)
 (column-number-mode 1)
-(setq global-linum-mode t)
+(global-linum-mode 1)
 
 ;; Packages
 (require 'package)
@@ -47,5 +47,14 @@
   (add-hook 'racer-mode-hook (lambda () (eldoc-mode 1))))
 
 (use-package rust-mode)
+
+(use-package smartparens
+  :init
+  (dolist (mode-hook
+	   '(rust-mode-hook
+	     emacs-lisp-mode-hook))
+    (add-hook mode-hook (lambda () (smartparens-strict-mode 1))))
+  :config
+  (require 'smartparens-config))
 
 (setq custom-file (make-temp-file "emacs-custom"))
