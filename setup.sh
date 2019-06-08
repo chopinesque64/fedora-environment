@@ -1,6 +1,9 @@
 #!/bin/sh
 
 # Package Installation
+sudo dnf install \
+  https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
+
 sudo dnf install curl \ 
 vim \
 guake \
@@ -9,7 +12,8 @@ docker-compose \
 zsh \
 emacs \
 firefox \
-gcc
+gcc \
+BasiliskII
 
 # Rust
 type rustup >/dev/null 2>&1 || curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
