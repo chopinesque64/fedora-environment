@@ -13,6 +13,7 @@ zsh \
 emacs \
 firefox \
 gcc \
+fuse-exfat \
 BasiliskII
 
 # Rust
