@@ -61,3 +61,6 @@ sudo ln -sf /usr/share/applications/emacs.desktop ~/.config/autostart/
 
 # Firefox
 ln -sf "$PWD/configs/user.js" $(find ~/.mozilla/firefox -type d -name "*.default" -print -quit)
+
+# BasiliskII
+ln -sf "$PWD/configs/basilisk_ii_prefs" ~/.basilisk_ii_prefs

@@ -1,6 +1,30 @@
 export GPG_TTY=$(tty)
-
 export PATH="$HOME/.cargo/bin:$PATH"
 
 alias vi="vim"
 export EDITOR=vim
+
+## Basilisk II Enhancements
+export BASILISK_ROOT="$HOME/virt/systems/system-7.5.3"
+
+# run BasiliskII with linked cdrom and floppy images
+function basilisk {
+  local argsB=""
+  if [[ -f "$BASILISK_ROOT/cdrom" && -L "$BASILISK_ROOT/cdrom" ]]; then
+   argsB="--cdrom $BASILISK_ROOT/cdrom $argsB"
+  fi
+  if [[ -f "$BASILISK_ROOT/floppy" && -L "$BASILISK_ROOT/floppy" ]]; then
+    argsB="--floppy $BASILISK_ROOT/floppy $argsB"
+  fi
+  BasiliskII $(echo $argsB) $1
+}
+
+# attach cdrom image to Basilisk II (no hot swap)
+# Usage: cdromB CD_IMAGE_PATH
+function cdromB {
+  if [[ ! $# == 1 ]]; then
+    rm "$BASILISK_ROOT/cdrom" > /dev/null 2>&1
+  else
+    ln -sf "$1" "$BASILISK_ROOT/cdrom" 
+  fi
+}
