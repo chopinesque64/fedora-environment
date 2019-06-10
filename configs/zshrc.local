@@ -4,6 +4,14 @@ export PATH="$HOME/.cargo/bin:$PATH"
 alias vi="vim"
 export EDITOR=vim
 
+function mdc {
+  if [[ $# == 1 ]]; then
+    mkdir $1
+    [ $? -ne 0 ] && exit 
+    cd $1
+  fi
+}
+
 ## Basilisk II Enhancements
 export BASILISK_ROOT="$HOME/virt/systems/system-7.5.3"
 
