@@ -24,6 +24,7 @@ rustup component add rust-src
 
 # Cinnamon
 dconf load /org/cinnamon/ < configs/cinnamon-dconf
+ln -s "$PWD/configs/gtk.css" ~/.config/gtk-3.0/gtk.css
 
 # Vim
 ln -sf "$PWD/configs/vimrc" ~/.vimrc
