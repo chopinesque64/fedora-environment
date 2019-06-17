@@ -22,6 +22,11 @@ rustup toolchain add nightly
 cargo +nightly install racer
 rustup component add rust-src
 
+# TeX Live
+TEX_TEMP=$(mktemp -d)
+wget -qO- http://mirror.ctan.org/systems/texlive/tlnet/install-tl-unx.tar.gz | tar -C $TEX_TEMP -xvz
+sudo $TEX_TEMP/install-tl-*/install-tl
+
 # Cinnamon
 dconf load /org/cinnamon/ < configs/cinnamon-dconf
 ln -s "$PWD/configs/gtk.css" ~/.config/gtk-3.0/gtk.css
