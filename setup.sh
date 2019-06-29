@@ -6,7 +6,6 @@ sudo dnf install \
 
 sudo dnf install curl \ 
 vim \
-guake \
 docker \
 docker-compose \
 zsh \
@@ -46,11 +45,6 @@ git config --global user.name "Nathanael Gentry"
 git config --global user.signingkey 4C7C95EC9EF26D41 
 git config --global commit.gpgsign true
 sudo ln -sf "$PWD/configs/post-commit" /usr/share/git-core/templates/hooks/
-
-# Guake
-sudo ln -sf /usr/share/applications/guake.desktop ~/.config/autostart/
-gconftool-2 --load configs/apps-guake.xml
-gconftool-2 --load configs/schemas-apps-guake.xml
 
 # Docker
 sudo systemctl enable docker
