@@ -4,10 +4,29 @@ export PATH="$HOME/.cargo/bin:$PATH"
 alias vi="vim"
 export EDITOR=vim
 
+function md {
+  if [[ $# == 1 ]]; then
+    mkdir --parents $1
+  fi
+}
+
+function mdm {
+  if [[ $# -ge 1 ]]; then
+    md $1 || exit
+    mv ${@:2} $1
+  fi
+}
+
 function mdc {
   if [[ $# == 1 ]]; then
-    mkdir $1
-    [ $? -ne 0 ] && exit 
+    md $1 || exit
     cd $1
+  fi
+}
+
+function cdl {
+  if [[ $# == 1 ]]; then
+    cd $1 || exit
+    type ll >/dev/null && ll || ls
   fi
 }
