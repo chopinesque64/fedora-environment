@@ -46,8 +46,6 @@
   (add-hook 'rust-mode-hook (lambda () (racer-mode)))
   (add-hook 'racer-mode-hook (lambda () (eldoc-mode 1))))
 
-(use-package rust-mode)
-
 (use-package smartparens
   :init
   (dolist (mode-hook
@@ -58,3 +56,20 @@
   (require 'smartparens-config))
 
 (setq custom-file (make-temp-file "emacs-custom"))
+
+(use-package neotree
+  :init
+  (setq neo-smart-open t)
+  (evil-define-key 'normal neotree-mode-map
+    (kbd "TAB") 'neotree-enter
+    (kbd "SPC") 'neotree-quick-look
+    (kbd "q") 'neotree-hide
+    (kbd "RET") 'neotree-enter
+    (kbd "g") 'neotree-refresh
+    (kbd "n") 'neotree-next-line
+    (kbd "p") 'neotree-previous-line
+    (kbd "A") 'neotree-stretch-toggle
+    (kbd "H") 'neotree-hidden-file-toggle)
+  :bind ("C-x p" . neotree-toggle))
+
+(use-package rust-mode)
