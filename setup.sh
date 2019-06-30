@@ -22,9 +22,9 @@ cargo +nightly install racer
 rustup component add rust-src
 
 # TeX Live
-TEX_TEMP=$(mktemp -d)
-wget -qO- http://mirror.ctan.org/systems/texlive/tlnet/install-tl-unx.tar.gz | tar -C $TEX_TEMP -xvz
-sudo $TEX_TEMP/install-tl-*/install-tl
+TEMP=$(mktemp -d)
+wget -qO- http://mirror.ctan.org/systems/texlive/tlnet/install-tl-unx.tar.gz | tar -C $TEMP -xvz
+sudo $TEMP/install-tl-*/install-tl
 
 # Cinnamon
 dconf load /org/cinnamon/ < configs/cinnamon-dconf
@@ -64,3 +64,15 @@ ln -sf "$PWD/configs/user.js" $(find ~/.mozilla/firefox -type d -name "*.default
 
 # BasiliskII
 ln -sf "$PWD/configs/basilisk_ii_prefs" ~/.basilisk_ii_prefs
+
+# Dropbox
+TEMP=$(mktemp -d)
+wget 'https://www.dropbox.com/download?dl=packages/fedora/nautilus-dropbox-2019.02.14-1.fedora.x86_64.rpm' -O $TEMP/dropbox.rpm
+sudo dnf install -y $TEMP/dropbox.rpm
+
+git clone https://github.com/dark/dropbox-filesystem-fix.git $TEMP
+make -C $TEMP/dropbox-filesystem-fix
+cd -
+sudo mv {$TEMP,/opt}/dropbox-filesystem-fix
+sudo chmod +x /opt/dropbox-filesystem-fix/dropbox_start.py
+sudo ln -sf configs/dropbox-filesystem-fix.desktop ~/.config/autostart
