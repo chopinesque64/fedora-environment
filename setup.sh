@@ -1,6 +1,7 @@
 #!/bin/sh
 
 mkdir ~/bin
+ln -s /run/media ~/media/$USER
 
 # Package Installation
 sudo dnf install \
@@ -40,13 +41,15 @@ https://raw.githubusercontent.com/altercation/vim-colors-solarized/master/colors
 ~/.vim/colors/
 
 # Git
+sudo ln -sf "$PWD/configs/post-commit" /usr/share/git-core/templates/hooks/
+ln -sf configs/gitignore ~/.gitignore
 git config --global credential.helper "cache --timeout=3600"
 git config --global push.default simple
 git config --global user.email ngentry1@liberty.edu
 git config --global user.name "Nathanael Gentry"
 git config --global user.signingkey 4C7C95EC9EF26D41 
 git config --global commit.gpgsign true
-sudo ln -sf "$PWD/configs/post-commit" /usr/share/git-core/templates/hooks/
+git config --global core.excludesfile ~/.gitignore
 
 # Docker
 sudo systemctl enable docker
