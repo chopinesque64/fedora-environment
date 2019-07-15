@@ -4,7 +4,6 @@ extfs /home/npgentry/virt/shares
 screen win/1024/768
 seriala /dev/ttyS0
 serialb /dev/ttyS1
-ether wlp3s0
 udptunnel false
 udpport 6066
 rom /home/npgentry/virt/systems/system-7.5.3/PERFORMA.ROM
@@ -31,5 +30,5 @@ mousewheelmode 1
 mousewheellines 3
 dsp /dev/dsp
 mixer /dev/mixer
-ignoresegv false
+ignoresegv true
 idlewait true
