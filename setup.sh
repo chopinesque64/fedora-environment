@@ -60,8 +60,6 @@ sudo ln -sf "$PWD/configs/zshrc.local" ~/.zshrc
 chsh --shell $(which zsh) $USER
 
 # Emacs
-mkdir ~/.emacs.d
-ln -sf "$PWD/configs/init.el" ~/.emacs.d/
 sudo ln -sf /usr/share/applications/emacs.desktop ~/.config/autostart/
 
 # Firefox
