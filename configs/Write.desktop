@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Write
+Exec=bash -c "$HOME/bin/Write/Write"
+Icon=/home/npgentry/bin/Write/write.png
+Type=Application
+Terminal=false
+Categories=Office;
+MimeType=text/plain
