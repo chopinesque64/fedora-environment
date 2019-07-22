@@ -93,6 +93,7 @@ Many desktop applications store their configurations in =~/.config/=, so we'll s
 We have already installed Emacs, but let's stow our config and start Emacs on login.
 
 #+begin_src bash
+  $stow emacs
   sudo ln -sf /usr/bashare/applications/emacs.desktop ~/.config/autostart/
 #+end_src
 

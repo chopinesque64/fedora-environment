@@ -1,0 +1,16 @@
+#+TITLE: Emacs Configuration
+#+AUTHOR: Nathanael Gentry
+#+EMAIL: ngentry1@liberty.edu
+#+OPTIONS: toc:nil num:nil
+
+* Bootstrap
+My =init.el= sets up MELPA in the package manager and installs =use-package.el= so all the configuration here works, even on a new install. Here, we make this happen by ensuring packages are installed before we use them.
+#+begin_src emacs-lisp
+  (require 'use-package-ensure)
+  (setq use-package-always-ensure t)
+#+end_src
+
+Start Emacs maximized.
+#+begin_src emacs-lisp
+  (toggle-frame-maximized)
+#+end_src
