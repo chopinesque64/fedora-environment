@@ -284,3 +284,20 @@ Note, however, that Org also uses these settings to show PDF previews.
     (add-hook 'TeX-after-TeX-LaTeX-command-finished-hook
               #'TeX-revert-document-buffer))
 #+end_src
+
+* Terminal
+Use =multi-term= for login shell sessions.
+
+#+begin_src emacs-lisp
+  (use-package multi-term
+    :init
+    (global-set-key (kbd "C-c t") 'multi-term)
+    (setq multi-term-program-switches "--login"))
+#+end_src
+
+Line numbers don't play well with my =zsh= completion, so let's disable them.
+
+#+begin_src emacs-lisp
+  (add-hook 'term-mode-hook
+            (lambda () (display-line-numbers-mode -1)))
+#+end_src
