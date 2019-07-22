@@ -3,7 +3,6 @@ set -e
 
 sudo dnf install git -y
 
-sudo ln -sf "$PWD/../configs/post-commit" /usr/share/git-core/templates/hooks/
 ln -sf configs/gitignore ~/.gitignore
 git config --global credential.helper "cache --timeout=3600"
 git config --global push.default simple
