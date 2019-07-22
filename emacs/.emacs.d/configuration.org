@@ -301,3 +301,25 @@ Line numbers don't play well with my =zsh= completion, so let's disable them.
   (add-hook 'term-mode-hook
             (lambda () (display-line-numbers-mode -1)))
 #+end_src
+* Org
+** Appearance
+Since =nord-theme= doesn't have good heading contrast, use bullet heading indicators.
+
+#+begin_src emacs-lisp :tangle yes
+  (use-package org-bullets
+    :init (add-hook org-mode-hook 'org-bullets-mode))
+#+end_src
+
+And change from the distracting default ellipsis.
+
+#+begin_src emacs-lisp :tangle yes
+  (setq ord-ellipsis " ▼ ")
+#+end_src
+
+Open source block editor (=C-c '=) in the same window; make formats and tabs native.
+
+#+begin_src emacs-lisp :tangle yes
+  (setq org-src-fontify-natively t
+        org-src-tab-acts-natively t
+        org-src-window-setup 'current-window)
+#+end_src
