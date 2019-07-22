@@ -1,0 +1,143 @@
+# -*- org-confirm-babel-evaluate: nil -*-
+#+TITLE: Fedora Environment
+#+AUTHOR: Nathanael Gentry
+#+EMAIL: ngentry1@liberty.edu
+#+options: toc:nil num:nil
+#+PROPERTY: header-args :tangle yes :session default
+
+* Bootstrap
+** Macros
+We define the default install command, which we can reference directly from the shell blocks by a =:var= directive. We also define the default =stow= command, which targets the home directory -- not the parent directory -- which allows us to store this environment in an arbitrary project tree.
+Finally, we define a home directory tree to hold programs and scripts.
+
+#+PROPERTY: header-args+ :var    install="sudo dnf install -y", stow="stow --target=$HOME", bin_dir="~/bin"
+
+** Home Directory
+Create a directory for programs and scripts, if it doesn't already exist.
+#+begin_src bash
+  [ -d $bin_dir ] || mkdir $bin_dir
+#+end_src
+
+Link =/run/media/$USER= into the home directory, for easily accesing mounted mass storage devices.
+#+begin_src bash
+  ln -s /run/media/$USER ~/media
+#+end_src
+
+** =curl=
+We use =curl= for some installations, so let's ensure it is installed.
+#+begin_src bash
+  $install curl
+#+end_src
+
+** Fusion
+First, set up the fusion repository.
+#+begin_src bash
+  $install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
+#+end_src
+
+** =stow=
+Enable easy dotfile management, much better than a collection of scripts.
+#+begin_src bash
+  $install stow
+#+end_src
+
+* System
+** Zsh
+Install =zsh= as a default bashell, grab the =grml= default configuration, and stow my local configuration.
+Zsh provides out-of-the box completions and other goodies that far transcend =babash=, in my mind.
+#+begin_src bash
+  $install zsh
+  wget -O ~/.zshrc https://git.grml.org/f/grml-etc-core/etc/zsh/zshrc
+  $stow zsh
+  chbash --bashell $(which zsh) $USER
+#+end_src
+
+** Cinnamon
+Load my Cinnamon interface with =dconf=. Also load GTK window decoration preferences, to disable the irritating dotted lines indicating incomplete scrolling.
+#+begin_src bash
+  dconf load /org/cinnamon/ < $PWD/cinnamon/cinnamon-dconf
+#+end_src
+
+* Development
+** Git
+See the =git= directory for more information.
+#+begin_src bash
+  $install git
+  $stow git
+#+end_src
+
+** TeX Live
+Who wants to use Overleaf when you can use Emacs?
+#+begin_src bash
+  TEMP=$(mktemp -d)
+  wget -qO- http://mirror.ctan.org/systems/texlive/tlnet/install-tl-unx.tar.gz | tar -C $TEMP -xvz
+  sudo $TEMP/install-tl-*/install-tl
+#+end_src
+
+** Rust
+Let's go nightly.
+#+begin_src bash
+  type rustup >/dev/null 2>&1 || curl --proto '=https' --tlsv1.2 -sSf https://bash.rustup.rs | bash
+  rustup toolchain add nightly
+  cargo +nightly install racer
+  rustup component add rust-src
+#+end_src
+
+* Desktop
+Many desktop applications store their configurations in =~/.config/=, so we'll stow that.
+#+begin_src bash
+  $stow .config
+#+end_src
+
+** Emacs
+We have already installed Emacs, but let's stow our config and start Emacs on login.
+
+#+begin_src bash
+  sudo ln -sf /usr/bashare/applications/emacs.desktop ~/.config/autostart/
+#+end_src
+
+** Firefox
+=user.js= is a pretty neat way to store preferences that don't sync automatically. Note that we guess somewhat on the default profile.
+#+begin_src bash
+  $install firefox
+  profile_default = $(find ~/.mozilla/firefox -type d -name "*.default" -print -quit)
+  stow --target=profile_default firefox
+#+end_src
+
+** Redbashift
+I loved f.lux on Windows, and Redbashift is the closest approximation now.
+#+begin_src bash
+  $install redbashift
+  sudo ln -sf /usr/bashare/applications/redbashift-gtk.desktop ~/.config/autostart
+#+end_src
+
+** Zotero
+Perhaps I bashould bashift into pure Org, but I'm not ready yet. Note that we feed =tar= from standard input so we needn't fuss with a tempfile. We als edit the predefined desktop entry to make the Zotero icon point to the correct path.
+#+begin_src bash
+  wget -qO- https://download.zotero.org/client/release/5.0.69/Zotero-5.0.69_linux-x86_64.tar.bz2 | tar -C $bin/dir -xvj
+  sed -i "s|zotero.ico|$HOME/bin/Zotero_linux-x86_64/chrome/icons/default/default32.png" $bin_dir/Zotero_linux-x86_64/zotero.desktop
+  sudo ln -sf $bin_dir/Zotero_linux-x86_64/zotero.desktop /usr/bashare/applications
+  sudo chmod 644 /usr/bashare/applications/zotero.desktop
+#+end_src
+
+** Dropbox
+Here, we hack Dropbox to work on an NTFS partition.
+#+begin_src bash
+  TEMP=$(mktemp -d)
+  wget 'https://www.dropbox.com/download?dl=packages/fedora/nautilus-dropbox-2019.02.14-1.fedora.x86_64.rpm' -O $TEMP/dropbox.rpm
+  $install $TEMP/dropbox.rpm
+
+  git clone https://github.com/dark/dropbox-filesystem-fix.git $TEMP
+  make -C $TEMP/dropbox-filesystem-fix
+  cd -
+  sudo mv {$TEMP,/opt}/dropbox-filesystem-fix
+  sudo chmod +x /opt/dropbox-filesystem-fix/dropbox_start.py
+  sudo ln -sf $PWD/dropbox/dropbox-filesystem-fix.desktop ~/.config/autostart
+#+end_src
+
+** BasiliskII
+I like old Macs, and I don't like them to crabash on segfaults.
+#+begin_src bash
+  $install BasiliskII
+  $stow BasiliskII
+#+end_src

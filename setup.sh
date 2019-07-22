@@ -1,15 +1,10 @@
-#!/bin/sh
+#!/bin/bash
 
-sudo dnf install \
-  https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
+# Install Emacs to bootstrap our literate config
+sudo dnf install -y emacs
 
-sudo dnf install stow
-
-./config-dirs.sh
-./setup-zsh.sh
-./setup-git.sh
-./setup-emacs.sh
-./setup-cinnamon.sh
-./setup-firefox.sh
-./setup-texlive.sh
-./setup-BasiliskII.sh
+# Tangle the configuration and execute it
+emacs --batch -l org fedora-environment.org \
+      --eval="(org-babel-do-load-languages 'org-babel-load-languages '((shell . t)))" \
+      --eval="(setq org-confirm-babel-evaluate nil)" \
+      --eval="(org-babel-execute-buffer)"
