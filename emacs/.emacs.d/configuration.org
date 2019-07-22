@@ -189,3 +189,98 @@ Nothing special to see here.
    #+begin_src emacs-lisp
      (use-package projectile)
    #+end_src
+
+* Development Environments
+And to think of the untold hours I spent configuring C\C++ tags when I could have used this!
+
+#+begin_src emacs-lisp
+  (use-package dumb-jump
+    :config
+    (global-set-key (kbd "M-.") 'dumb-jump-go))
+#+end_src
+
+** Python
+Set up our =virtualenv= for =jedi=.
+
+#+begin_src emacs-lisp
+  (npg/append-to-path "~/.local/bin")
+#+end_src
+
+Use =elpy= for a great IDE experience.
+
+#+begin_src emacs-lisp
+  (use-package elpy
+    :init (elpy-enable))
+#+end_src
+
+Check syntax with =flycheck=.
+
+#+begin_src emacs-lisp
+  (add-hook 'elpy-mode-hook 'flycheck-mode)
+#+end_src
+
+Format code by PEP8 on save.
+
+#+begin_src emacs-lisp
+  (use-package py-autopep8
+  :init (add-hook 'elpy-mode-hook 'py-autopep8-enable-on-save))
+#+end_src
+
+(Do we need to use company-jedi since we already have elpy?)
+
+** C/C++
+Maybe =rtags= is a bit intense, but using it with =cmake-ide= works well now.
+
+#+begin_src emacs-lisp
+  (use-package rtags
+    :ensure flycheck-rtags
+    :init
+    (add-hook 'c-mode-common-hook (lambda ()
+                                   (flycheck-select-checker 'rtags)
+                                   (setq-local flycheck-highlighting-mode nil)
+                                   (setq-local flycheck-check-syntax-automatically nil)))
+
+    (setq rtags-autostart-diagnostics t
+          rtags-completions-enabled t)
+    (push 'company-rtags company-backends))
+#+end_src
+
+Use =cmake-ide= to automate =rtags= processes in a CMake project.
+
+#+begin_src emacs-lisp
+  (use-package cmake-ide
+    :init (cmake-ide-setup))
+#+end_src
+
+** LaTeX
+Org will begin replacing pure LaTeX for notes and such, but I still complete homework in here.
+
+First, set up =pdf-tools= for full previews, and disable line numbers in PDF buffers.
+#+begin_src emacs-lisp
+  (use-package pdf-tools
+  :bind
+  ("C-c C-g" . pdf-sync-forward-search)
+
+  :init
+  (pdf-tools-install)
+  (setq mouse-wheel-follow-mouse t
+        pdf-view-resize-factor 1.00)
+  (add-hook 'pdf-view-mode-hook
+            (lambda() (display-line-numbers-mode -1))))
+#+end_src
+
+Now, we can setup LaTeX. I don't bother setting up RefTeX because I write papers in Org.
+Note, however, that Org also uses these settings to show PDF previews.
+#+begin_src emacs-lisp
+(use-package tex-site
+    :ensure auctex
+    :init
+    (setq TeX-auto-save t
+          TeX-parse-self t
+          TeX-source-correlate-method 'synctex
+          TeX-correlate-start-server t
+          TeX-view-program-selection '((output-pdf "pdf-tools"))
+          TeX-view-program-list '(("pdf-tools" "TeX-pdf-tools-sync-view")))
+    (add-hook 'TeX-after-TeX-LaTeX-command-finished-hook
+              #'TeX-revert-document-buffer))
+#+end_src
