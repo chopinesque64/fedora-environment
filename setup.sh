@@ -3,7 +3,8 @@
 sudo dnf install \
   https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
 
-cd scripts
+sudo dnf install stow
+
 ./config-dirs.sh
 ./setup-zsh.sh
 ./setup-git.sh
@@ -12,4 +13,3 @@ cd scripts
 ./setup-firefox.sh
 ./setup-texlive.sh
 ./setup-BasiliskII.sh
-cd -
