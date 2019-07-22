@@ -73,3 +73,96 @@ I want a pristine modeline, uncluttered by modetexts. Note that the window title
           minions-mode-line-delimiters '("" . ""))
     (minions-mode 1))
 #+end_src
+
+* Global Editor
+Note that =sensible-defaults.el= already inhibits the startup screen and blanks the scratch buffer.
+
+** Tabs & Indentation
+Let's make our shallow tabs into spaces.
+#+begin_src emacs-lisp
+  (setq-default tab-width 2)
+  (setq-default indent-tabs-mode nil)
+#+end_src
+
+** Lines
+Give yourself the comfort of context, even if it gobbles some real estate.
+#+begin_src emacs-lisp
+  (global-display-line-numbers-mode)
+#+end_src
+
+Who needs to split lines at 80 characters?
+#+begin_src emacs-lisp
+  (global-visual-line-mode)
+#+end_src
+
+** =smartparens=
+So powerful.
+#+begin_src emacs-lisp
+(use-package smartparens
+  :bind (:map smartparens-mode-map
+         ("C-M-f" . sp-next-sexp)
+         ("C-M-b" . sp-backward-sexp)
+         ("C-M-d" . sp-down-sexp)
+         ("C-M-a" . sp-backward-down-sexp)
+         ("C-M-u" . sp-up-sexp)
+         ("C-M-e" . sp-backward-up-sexp)
+         ("C-M-n" . sp-forward-sexp)
+         ("C-M-p" . sp-previous-sexp)
+         ("C-S-d" . sp-beginning-of-sexp)
+         ("C-S-a" . sp-end-of-sexp)
+         ("C-M-k" . sp-kill-sexp)
+         ("C-M-w" . sp-copy-sexp)
+         ("M-<delete>" . sp-unwrap-sexp)
+         ("M-<backspace>" . sp-backward-unwrap-sexp)
+         ("M-D" . sp-splice-sexp)
+         ("C-S-<backspace>" . sp-splice-sexp-killing-around)
+         ("C-<right>" . sp-forward-slurp-sexp)
+         ("C-<left>" . sp-forward-barf-sexp)
+         ("C-S-<left>" . sp-backward-slurp-sexp)
+         ("C-S-<right>" . sp-backward-barf-sexp))
+  :init
+  (setq sp-cancel-autoskip-on-backward-movement nil)
+  :config
+(require 'smartparens-config))
+#+end_src
+
+** =rainbow-delimiters=
+I am not yet an Emacs minimalist.
+#+begin_src emacs-lisp
+  (use-package rainbow-delimiters
+    :init (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
+#+end_src
+
+** =ido=
+Very basic for now.
+
+#+begin_src emacs-lisp
+  (ido-mode t)
+  (setq ido-enable-flex-matching t)
+#+end_src
+
+** =company=
+Enable =company= everywhere, and reward our laziness by giving ourselves access to unicode math.
+#+begin_src emacs-lisp
+  (use-package company
+    :ensure company-math
+    :init (global-company-mode 1)
+    :config (add-to-list 'company-backends 'company-math-symbols-unicode))
+#+end_src
+
+Bind =M-/= to bring up a completion menu.
+#+begin_src emacs-lisp
+  (global-set-key (kbd "M-/") 'company-complete-common)
+#+end_src
+
+Quickhelp is useful for API discovery, but it doesn't talk to =nord-theme= right now.
+#+begin_src emacs-lisp
+  (use-package company-quickhelp
+    :init (company-quickhelp-mode))
+#+end_src
+
+** =flycheck=
+We'll add local mode hooks for flycheck.
+#+begin_src emacs-lisp
+  (use-package flycheck)
+#+end_src
