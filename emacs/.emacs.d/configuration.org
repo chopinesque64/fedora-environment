@@ -166,3 +166,26 @@ We'll add local mode hooks for flycheck.
 #+begin_src emacs-lisp
   (use-package flycheck)
 #+end_src
+
+* Project Management
+** =ag=
+Try out the Silver Searcher.
+#+begin_src emacs-lisp
+  (use-package ag)
+#+end_src
+
+** =magit=
+Nothing special to see here.
+#+begin_src emacs-lisp
+  (use-package magit
+    :bind
+    ("C-x g" . magit-status)
+
+    :config
+    (setq magit-completing-read-function 'magit-ido-completing-read))
+#+end_src
+
+** =projectile=
+   #+begin_src emacs-lisp
+     (use-package projectile)
+   #+end_src
