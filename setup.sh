@@ -6,7 +6,6 @@ sudo dnf install \
 cd scripts
 ./config-dirs.sh
 ./setup-zsh.sh
-./setup-vim.sh
 ./setup-git.sh
 ./setup-emacs.sh
 ./setup-cinnamon.sh
