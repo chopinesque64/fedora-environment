@@ -37,3 +37,39 @@ Define some sensible utility functions.
     (setenv "PATH" (concat (getenv "PATH") ":" path))
     (add-to-list 'exec-path path))
 #+end_src
+
+* Appearance
+** Decorations
+Reclaim real estate, especially on my old X220T, by disabling window chrome.
+#+begin_src emacs-lisp
+  (tool-bar-mode 0)
+  (menu-bar-mode 0)
+  (scroll-bar-mode -1)
+#+end_src
+
+** Theme
+I love the unobtrusive elegance of [[https://github.com/arcticicestudio/nord-emacs][nord-emacs]], although sometimes the colors can be a little /too/ subtle.
+#+begin_src emacs-lisp
+  (use-package nord-theme
+    :load-path "themes"
+    :config
+    (load-theme 'nord t))
+#+end_src
+
+Frame transparency does not seem to play nicely with Cinnamon, but here's a function to manipulate it.
+#+begin_src emacs-lisp
+  (defun opacity (value)
+    "Sets the percent opacity of the frame window."
+    (interactive "nOpacity Value (0 - 100):")
+    (set-frame-parameter (selected-frame) 'alpha value))
+#+end_src
+
+** Modeline
+I want a pristine modeline, uncluttered by modetexts. Note that the window title gives =projectile= info.
+#+begin_src emacs-lisp
+  (use-package minions
+    :config
+    (setq minions-mode-line-lighter ""
+          minions-mode-line-delimiters '("" . ""))
+    (minions-mode 1))
+#+end_src
