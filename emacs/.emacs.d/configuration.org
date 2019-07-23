@@ -209,6 +209,27 @@ Always kill the current buffer with keystroke.
   (global-set-key (kbd "C-x k") 'npg/kill-current-buffer)
 #+end_src
 
+When splitting a window, I always want focus in the new window.
+
+#+BEGIN_SRC emacs-lisp
+  (defun nps/split-window-below-and-switch ()
+    "Split the window horizontally, then switch to the new pane."
+    (interactive)
+    (split-window-below)
+    (balance-windows)
+    (other-window 1))
+
+  (defun npg/split-window-right-and-switch ()
+    "Split the window vertically, then switch to the new pane."
+    (interactive)
+    (split-window-right)
+    (balance-windows)
+    (other-window 1))
+
+  (global-set-key (kbd "C-x 2") 'npg/split-window-below-and-switch)
+  (global-set-key (kbd "C-x 3") 'npg/split-window-right-and-switch)
+#+END_SRC
+
 * Project Management
 ** =ag=
 Try out the Silver Searcher.
