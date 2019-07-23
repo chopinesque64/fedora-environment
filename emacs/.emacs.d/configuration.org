@@ -16,12 +16,12 @@ Start Emacs maximized.
 #+end_src
 
 Tell emacs where our linux configuration document lives.
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
   (setq linux-configuration-directory "~/projects/fedora-environment/")
 #+end_src
 
 Add a temporary customization file.
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
   (setq custom-file (make-temp-file "emacs-custom"))
 #+end_src
 
@@ -180,7 +180,7 @@ We'll add local mode hooks for flycheck.
 ** Keybindings
 Quickly open my Emacs and Fedora configuration org documents.
 
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
   (defun npg/visit-emacs-config ()
     (interactive)
     (find-file (concat user-emacs-directory "configuration.org")))
@@ -188,7 +188,7 @@ Quickly open my Emacs and Fedora configuration org documents.
   (global-set-key (kbd "C-c e e") 'npg/visit-emacs-config)
 #+end_src
 
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
   (defun npg/visit-linux-config ()
     (interactive)
     (find-file (concat linux-configuration-directory "fedora-environment.org")))
@@ -336,13 +336,13 @@ Line numbers don't play well with my =zsh= completion, so let's disable them.
 * Org
   We have already installed the Org package archive, so let's ensure we're using that latest released version.
 
-  #+begin_src emacs-lisp :tangle yes
+  #+begin_src emacs-lisp
     (use-package org-plus-contrib)
   #+end_src
 ** Appearance
 Since =nord-theme= doesn't have good heading contrast, use bullet heading indicators.
 
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
   (use-package org-bullets
     :init (add-hook org-mode-hook 'org-bullets-mode))
 #+end_src
@@ -355,7 +355,7 @@ And change from the distracting default ellipsis.
 
 Open source block editor (=C-c '=) in the same window; make formats and tabs native.
 
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
   (setq org-src-fontify-natively t
         org-src-tab-acts-natively t
         org-src-window-setup 'current-window)
@@ -363,12 +363,12 @@ Open source block editor (=C-c '=) in the same window; make formats and tabs nat
 
 Indent headings by default, and enable =yasnippet= for both Org and LaTeX.
 
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
   (add-hook org-mode-hook 'org-indent-mode)
 #+end_src
 
 Enable =yasnippet= for both Org and LaTeX.
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
   (defun org-latex-yas ()
     "Activate org and LaTeX expansion in org-mode buffers."
     (yas-minor-mode)
