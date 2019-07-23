@@ -412,11 +412,22 @@ Line numbers don't play well with my =zsh= completion, so let's disable them.
             (lambda () (display-line-numbers-mode -1)))
 #+end_src
 * Org
-  We have already installed the Org package archive, so let's ensure we're using that latest released version.
+ We have already installed the Org package archive, so let's ensure we're using that latest released version with contributions. Indent headings by default, and enable =yasnippet=
 
-  #+begin_src emacs-lisp
-    (use-package org-plus-contrib)
-  #+end_src
+ #+begin_src emacs-lisp
+      (use-package org
+        :ensure org-plus-contrib
+        :init
+        (dolist (mode-hook
+                 '(org-indent-mode
+                   yas-minor-mode))
+          (add-hook 'org-mode-hook mode-hook)))
+ #+end_src
+
+Make sure we have LaTeX snippets available in Org mode.
+#+begin_src emacs-lisp
+  (yas-activate-extra-mode 'latex-mode)
+#+end_src
 ** Appearance
 Since =nord-theme= doesn't have good heading contrast, use bullet heading indicators.
 
@@ -439,20 +450,7 @@ Open source block editor (=C-c '=) in a split window; make formats and tabs nati
         org-src-window-setup 'split-window-below)
 #+end_src
 
-** Modality
 
-Indent headings by default, and enable =yasnippet= for both Org and LaTeX.
-
-#+begin_src emacs-lisp
-  (add-hook 'org-mode-hook 'org-indent-mode)
 #+end_src
 
-Enable =yasnippet= for both Org and LaTeX.
-#+begin_src emacs-lisp
-  (defun org-latex-yas ()
-    "Activate org and LaTeX expansion in org-mode buffers."
-    (yas-minor-mode)
-    (yas-activate-extra-mode 'latex-mode))
 
-  (add-hook 'org-mode-hook #'org-latex-yas)
-#+end_src
