@@ -392,6 +392,8 @@ Open source block editor (=C-c '=) in the same window; make formats and tabs nat
         org-src-window-setup 'current-window)
 #+end_src
 
+** Modality
+
 Indent headings by default, and enable =yasnippet= for both Org and LaTeX.
 
 #+begin_src emacs-lisp
