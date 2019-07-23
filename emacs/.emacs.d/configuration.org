@@ -48,7 +48,7 @@ Define some sensible utility functions.
     (add-to-list 'exec-path path))
 #+end_src
 
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
   (defun npg/kill-current-buffer ()
     "Kill the current buffer without prompting."
     (interactive)
@@ -416,13 +416,13 @@ Since =nord-theme= doesn't have good heading contrast, use bullet heading indica
 
 #+begin_src emacs-lisp
   (use-package org-bullets
-    :init (add-hook org-mode-hook 'org-bullets-mode))
+    :init (add-hook 'org-mode-hook 'org-bullets-mode))
 #+end_src
 
 And change from the distracting default ellipsis.
 
-#+begin_src emacs-lisp :tangle yes
-  (setq ord-ellipsis " ▼ ")
+#+begin_src emacs-lisp
+  (setq org-ellipsis " ▼ ")
 #+end_src
 
 Open source block editor (=C-c '=) in the same window; make formats and tabs native.
@@ -438,7 +438,7 @@ Open source block editor (=C-c '=) in the same window; make formats and tabs nat
 Indent headings by default, and enable =yasnippet= for both Org and LaTeX.
 
 #+begin_src emacs-lisp
-  (add-hook org-mode-hook 'org-indent-mode)
+  (add-hook 'org-mode-hook 'org-indent-mode)
 #+end_src
 
 Enable =yasnippet= for both Org and LaTeX.
@@ -448,5 +448,5 @@ Enable =yasnippet= for both Org and LaTeX.
     (yas-minor-mode)
     (yas-activate-extra-mode 'latex-mode))
 
-  (add-hook org-mode-hook #'org-latex-yas)
+  (add-hook 'org-mode-hook #'org-latex-yas)
 #+end_src
