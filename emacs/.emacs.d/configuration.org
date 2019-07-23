@@ -48,6 +48,13 @@ Define some sensible utility functions.
     (add-to-list 'exec-path path))
 #+end_src
 
+#+begin_src emacs-lisp :tangle yes
+  (defun npg/kill-current-buffer ()
+    "Kill the current buffer without prompting."
+    (interactive)
+    (kill-buffer (current-buffer)))
+#+end_src
+
 * Appearance
 ** Decorations
 Reclaim real estate, especially on my old X220T, by disabling window chrome.
@@ -196,8 +203,11 @@ Quickly open my Emacs and Fedora configuration org documents.
     (global-set-key (kbd "C-c e f") 'npg/visit-linux-config)
 #+end_src
 
-#+RESULTS:
-: npg/visit-linux-config
+Always kill the current buffer with keystroke.
+
+#+begin_src emacs-lisp :tangle yes
+  (global-set-key (kbd "C-x k") 'npg/kill-current-buffer)
+#+end_src
 
 * Project Management
 ** =ag=
