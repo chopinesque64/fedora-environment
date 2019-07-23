@@ -55,6 +55,47 @@ Define some sensible utility functions.
     (kill-buffer (current-buffer)))
 #+end_src
 
+* Custom Functions
+** Peek Frame
+Tuhdo has an excellent tutorial on setting up popup frames for =rtags=, and I've generalized his code and made the popup undecorated but still resizable.
+
+#+begin_src emacs-lisp :tangle yes
+  (defun npg/make-peek-frame (in-frame-function &rest args)
+    "Make a new frame for peeking definition"
+    (let (summary
+          doc-frame
+          x y
+          ;; Find the pixel absolute position of the current beginning of the symbol at point.
+          (abs-pixel-pos (save-excursion
+                           (beginning-of-thing 'symbol)
+                           (window-absolute-pixel-position))))
+      (setq x (car abs-pixel-pos))
+      (setq y (+ (cdr abs-pixel-pos) (frame-char-height)))
+
+      ;; 2. Create a new invisible frame, with the current buffer in it.
+      (setq doc-frame (make-frame '((minibuffer . nil)
+                                    (name . "*Peek*")
+                                    (width . 80)
+                                    (visibility . nil)
+                                    (height . 15)
+                                    (undecorated . t)
+                                    (drag-internal-border . 1)
+                                    (internal-border-width . 5))))
+
+      ;; 3. Position the new frame right under the beginning of the symbol at point.
+      (set-frame-position doc-frame x y)
+
+      ;; 4. Jump to the symbol at point.
+      (with-selected-frame doc-frame
+        (apply in-frame-function args)
+        (read-only-mode)
+        (when semantic-stickyfunc-mode (semantic-stickyfunc-mode -1))
+        (recenter-top-bottom 0))
+
+      ;; 5. Make frame visible again
+      (make-frame-visible doc-frame)))
+#+end_src
+
 * Appearance
 ** Decorations
 Reclaim real estate, especially on my old X220T, by disabling window chrome.
