@@ -20,6 +20,11 @@ Tell emacs where our linux configuration document lives.
   (setq linux-configuration-directory "~/projects/fedora-environment/")
 #+end_src
 
+Add a temporary customization file.
+#+begin_src emacs-lisp :tangle yes
+  (setq custom-file (make-temp-file "emacs-custom"))
+#+end_src
+
 * Sensible Defaults
 Use HRS's [[https://github.com/hrs/sensible-defaults.el/][sensible-defaults.el]] for common-sense settings.
 #+begin_src emacs-lisp
