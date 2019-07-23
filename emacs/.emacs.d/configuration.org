@@ -132,6 +132,12 @@ I want a pristine modeline, uncluttered by modetexts. Note that the window title
     (minions-mode 1))
 #+end_src
 
+** Default Windows
+Split into two windows on startup.
+#+begin_src emacs-lisp
+  (split-window-right)
+#+end_src
+
 * Global Editor
 Note that =sensible-defaults.el= already inhibits the startup screen and blanks the scratch buffer.
 
@@ -425,12 +431,12 @@ And change from the distracting default ellipsis.
   (setq org-ellipsis " ▼ ")
 #+end_src
 
-Open source block editor (=C-c '=) in the same window; make formats and tabs native.
+Open source block editor (=C-c '=) in a split window; make formats and tabs native.
 
 #+begin_src emacs-lisp
   (setq org-src-fontify-natively t
         org-src-tab-acts-natively t
-        org-src-window-setup 'current-window)
+        org-src-window-setup 'split-window-below)
 #+end_src
 
 ** Modality
