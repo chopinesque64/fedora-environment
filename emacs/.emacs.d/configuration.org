@@ -841,6 +841,40 @@ the =NEXT= designation.
           nil
         next-headline)))
 #+end_src
+
+** Capture
+Let's bind =org-capture= to something sensible.
+#+begin_src emacs-lisp
+  (global-set-key (kbd "C-c c") 'org-capture)
+#+end_src
+
+Define a few common tasks as capture templates. Specifically, I frequently:
+  - Maintain a todo list
+
+#+begin_src emacs-lisp
+  (setq org-capture-templates
+        (quote (("t" "todo" entry (file org-capture-file)
+                 "* TODO %?\n%U\n%a\n" :clock-in t :clock-resume t))))
+#+end_src
+
+** Refile
+We can refile into this file and any agenda file, up to 3 levels deep.
+#+begin_src emacs-lisp
+  (setq org-refile-targets '((nil :maxlevel . 3)
+                             (org-agenda-files :maxlevel . 3)))
+#+end_src
+
+Use full outline paths for refile targets, so ido works well.
+#+begin_src emacs-lisp
+  (setq org-refile-use-outline-path t)
+  (setq org-outline-path-complete-in-steps nil)
+#+end_src
+
+Allow refile to create parent nodes with confirmation
+#+begin_src emacs-lisp
+  (setq org-refile-allow-creating-parent-nodes 'confirm)
+#+end_src
+
 #+begin_src emacs-lisp
 #+end_src
 
