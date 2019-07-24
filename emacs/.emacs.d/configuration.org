@@ -132,6 +132,15 @@ I want a pristine modeline, uncluttered by modetexts. Note that the window title
     (minions-mode 1))
 #+end_src
 
+Now, let's display 24-hour time in the modeline, but hide the default system
+load information.
+#+begin_src emacs-lisp
+  (setq display-time-default-load-average nil
+        display-time-24hr-format t)
+
+  (display-time-mode)
+#+end_src
+
 ** Default Windows
 Split into two windows on startup.
 #+begin_src emacs-lisp
@@ -152,6 +161,11 @@ Let's make our shallow tabs into spaces.
 Give yourself the comfort of context, even if it gobbles some real estate.
 #+begin_src emacs-lisp
   (global-display-line-numbers-mode)
+#+end_src
+
+Also show column numbers in the modeline
+#+begin_src emacs-lisp
+  (setq column-number-mode t)
 #+end_src
 
 Who needs to split lines at 80 characters?
