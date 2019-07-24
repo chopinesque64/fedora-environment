@@ -447,32 +447,45 @@ Line numbers don't play well with my =zsh= completion, so let's disable them.
             (lambda () (display-line-numbers-mode -1)))
 #+end_src
 * Org
- We have already installed the Org package archive, so let's ensure we're using that latest released version with contributions. Indent headings by default, and enable =yasnippet=
-
+ We have already installed the Org package archive, so let's ensure we're using that latest released version with contributions.
  #+begin_src emacs-lisp
-      (use-package org
-        :ensure org-plus-contrib
-        :init
-        (dolist (mode-hook
-                 '(org-indent-mode
-                   yas-minor-mode))
-          (add-hook 'org-mode-hook mode-hook)))
+   (use-package org
+     :ensure org-plus-contrib)
  #+end_src
+
+** Defaults
+Indent headings by default, and use =yasnippet=.
+#+begin_src emacs-lisp
+  (dolist (mode-hook
+                   '(org-indent-mode
+                     yas-minor-mode))
+            (add-hook 'org-mode-hook mode-hook))
+#+end_src
 
 Make sure we have LaTeX snippets available in Org mode.
 #+begin_src emacs-lisp
   (yas-activate-extra-mode 'latex-mode)
 #+end_src
-** Appearance
-Since =nord-theme= doesn't have good heading contrast, use bullet heading indicators.
 
+Let's use =ido= in here.
+#+begin_src emacs-lisp
+  (setq org-completion-use-ido t)
+#+end_src
+
+Open source block editor (=C-c '=) in a split window; make formats and tabs native.
+#+begin_src emacs-lisp
+  (setq org-src-fontify-natively t
+        org-src-tab-acts-natively t
+        org-src-window-setup 'split-window-below)
+#+end_src
+
+Since =nord-theme= doesn't have good heading contrast, use bullet heading indicators.
 #+begin_src emacs-lisp
   (use-package org-bullets
     :init (add-hook 'org-mode-hook 'org-bullets-mode))
 #+end_src
 
 And change from the distracting default ellipsis.
-
 #+begin_src emacs-lisp
   (setq org-ellipsis " ▼ ")
 #+end_src
