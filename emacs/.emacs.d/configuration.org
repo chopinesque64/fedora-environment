@@ -534,6 +534,53 @@ Store my org files in =~/documents/org=, and derive an agenda from all files sto
   (setq org-capture-file (org-file-path "capture.org"))
 #+end_src
 
+** Tasks
+I am using these [[http://doc.norang.ca/org-mode.html][task states]], with some verbiage modification. A task should be in state =WAIT= when the task needs information from someone else; it should be set to =HOLD= when I don't have time to do it.
+#+begin_src emacs-lisp
+  (setq org-todo-keywords
+        (quote ((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d)")
+                (sequence "WAIT(w@/!)" "HOLD(h@/!)" "|" "DROP(c@/!)" "MEET"))))
+#+end_src
+
+Since we have defined keys for each state, we can use fast selection with =C-c C-t KEY=.
+#+begin_src emacs-lisp
+  (setq org-use-fast-todo-selection t)
+#+end_src
+
+Using =S-<arrow>=, easily change todo states without all the processing (e.g. setting timestamps and notes) of normal state cycling. Useful for fixing the status of an entry.
+#+begin_src emacs-lisp
+  (setq org-treat-S-cursor-todo-selection-as-state-change nil)
+#+end_src
+
+To aid agenda filtering, auto-update tags whenever the state changes.
+#+begin_src emacs-lisp
+   (setq org-todo-state-tags-triggers
+        (quote (("DROP" ("DROP" . t))
+                ("WAIT" ("WAIT" . t))
+                ("HOLD" ("WAIT") ("HOLD" . t))
+                (done ("WAIT") ("HOLD"))
+                ("TODO" ("WAIT") ("DROP") ("HOLD"))
+                ("NEXT" ("WAIT") ("DROP") ("HOLD"))
+                ("DONE" ("WAIT") ("DROP") ("HOLD")))))
+#+end_src
+
+Hitting =C-c C-x C-s= will mark a todo as done and move it to an appropriate
+place in the archive.
+#+BEGIN_SRC emacs-lisp
+  (defun hrs/mark-done-and-archive ()
+    "Mark the state of an org-mode item as DONE and archive it."
+    (interactive)
+    (org-todo 'done)
+    (org-archive-subtree))
+
+  (define-key org-mode-map (kbd "C-c C-x C-s") 'hrs/mark-done-and-archive)
+#+END_SRC
+
+Record the time that a todo was archived.
+#+BEGIN_SRC emacs-lisp
+  (setq org-log-done 'time)
+#+END_SRC
+
 #+begin_src emacs-lisp
 #+end_src
 
