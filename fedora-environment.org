@@ -158,3 +158,9 @@ If you're wondering why I'm partial to Webster's 1913, read the posts referenced
    unzip -p $TEMP/dictionary.zip dictionary/stardict-dictd-web1913-2.4.2.tar.bz2 | \
    tar -C $dict_location -xvj
 #+end_src
+
+** =wordnet=
+Let's try this out as a backend for an emacs thesaurus.
+#+begin_src bash
+  $install wordnet
+#+end_src
