@@ -416,6 +416,18 @@ Note, however, that Org also uses these settings to show PDF previews.
               #'TeX-revert-document-buffer))
 #+end_src
 
+** Prose
+*** =flyspell=
+Let's enable spell-checking for text (org, markdown) and commit messages.
+#+begin_src emacs-lisp
+    (use-package flyspell
+      :config
+      (add-hook 'text-mode-hook 'turn-on-auto-fill)
+      (add-hook 'gfm-mode-hook 'flyspell-mode)
+      (add-hook 'org-mode-hook 'flyspell-mode)
+      (add-hook 'git-commit-mode-hook 'flyspell-mode))
+#+end_src
+
 *** Dictionary: Webster 1913
 I look up definitions by hitting =C-x w=, which shells out to =sdcv=. I've
 loaded that with the (beautifully lyrical) 1913 edition of Webster's dictionary,
@@ -437,6 +449,18 @@ so these definitions are a lot of fun.
 
     (define-key global-map (kbd "C-x w") 'hrs/dictionary-define-word)
 #+end_src
+
+*** Thesaurus: WordNet
+Synosaurus is hooked up to wordnet to provide access to a thesaurus. Hitting
+=C-x s= searches for synonyms.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package synosaurus)
+  (setq-default synosaurus-backend 'synosaurus-backend-wordnet)
+  (add-hook 'after-init-hook #'synosaurus-mode)
+  (define-key global-map "\C-xs" 'synosaurus-lookup)
+#+END_SRC
+
 * Terminal
 Use =multi-term= for login shell sessions.
 
