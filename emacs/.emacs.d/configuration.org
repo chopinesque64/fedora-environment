@@ -521,12 +521,20 @@ And change from the distracting default ellipsis.
   (setq org-ellipsis " ▼ ")
 #+end_src
 
-Open source block editor (=C-c '=) in a split window; make formats and tabs native.
+** Paths
+Store my org files in =~/documents/org=, and derive an agenda from all files stored therein.
+#+begin_src emacs-lisp
+  (setq org-directory "~/documents/org")
+
+  (defun org-file-path (filename)
+    "Return the absolute address of an org file, given its relative name."
+    (concat (file-name-as-directory org-directory) filename))
+
+  (setq org-agenda-files (list (file-name-as-directory org-directory)))
+  (setq org-capture-file (org-file-path "capture.org"))
+#+end_src
 
 #+begin_src emacs-lisp
-  (setq org-src-fontify-natively t
-        org-src-tab-acts-natively t
-        org-src-window-setup 'split-window-below)
 #+end_src
 
 
