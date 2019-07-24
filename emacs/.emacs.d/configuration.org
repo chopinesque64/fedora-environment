@@ -395,6 +395,27 @@ Note, however, that Org also uses these settings to show PDF previews.
               #'TeX-revert-document-buffer))
 #+end_src
 
+*** Dictionary: Webster 1913
+I look up definitions by hitting =C-x w=, which shells out to =sdcv=. I've
+loaded that with the (beautifully lyrical) 1913 edition of Webster's dictionary,
+so these definitions are a lot of fun.
+#+begin_src emacs-lisp
+    (defun hrs/dictionary-prompt ()
+      (read-string
+       (format "Word (%s): " (or (hrs/region-or-word) ""))
+       nil
+       nil
+       (hrs/region-or-word)))
+
+    (defun hrs/dictionary-define-word ()
+      (interactive)
+      (let* ((word (hrs/dictionary-prompt))
+             (buffer-name (concat "Definition: " word)))
+        (with-output-to-temp-buffer buffer-name
+          (shell-command (format "sdcv -n %s" word) buffer-name))))
+
+    (define-key global-map (kbd "C-x w") 'hrs/dictionary-define-word)
+#+end_src
 * Terminal
 Use =multi-term= for login shell sessions.
 

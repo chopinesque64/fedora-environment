@@ -142,3 +142,19 @@ I like old Macs, and I don't like them to crabash on segfaults.
   $install BasiliskII
   $stow BasiliskII
 #+end_src
+* Utilities
+** =sdcv=
+Let's install a StarDictionary client, =sdcv=, so we have ready access to Webster's 1913 within Emacs.
+#+begin_src bash :tangle yes
+  $install sdcv
+#+end_src
+
+If you're wondering why I'm partial to Webster's 1913, read the posts referenced in [[https://irreal.org/blog/?p=6546]["Webster and Emacs"]]. Here, we download the dictionary in StarDictionary format. (Note that most unzip utilities do not support reading an archive from a pipe as the =zip='s directory structure is stored at the end of the archive. We thus use a temporary directory.)
+#+begin_src bash
+  TEMP=$(mktemp -d)
+  dict_location=$HOME/.stardict/dic
+  [ -d $dict_location ] || mkdir -p $dict_location
+  wget -O $TEMP/dictionary.zip https://s3.amazonaws.com/jsomers/dictionary.zip && \
+   unzip -p $TEMP/dictionary.zip dictionary/stardict-dictd-web1913-2.4.2.tar.bz2 | \
+   tar -C $dict_location -xvj
+#+end_src
