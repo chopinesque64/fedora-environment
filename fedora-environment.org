@@ -58,6 +58,41 @@ Load my Cinnamon interface with =dconf=. Also load GTK window decoration prefere
   dconf load /org/cinnamon/ < $PWD/cinnamon/cinnamon-dconf
 #+end_src
 
+*** Machine-Specific Keymaps
+**** Thinkpad T450s
+
+If we're on a ThinkPad T450s, remap F9-F12 to not require the =<Fn>= prefix.
+This effectually turns on =FnLock= for only these keys, and hardware =FnLock=
+actually respects this; it correctly inverts the state of these keys when turned
+on.
+
+I use these keys for Emacs org tasks, and Fedora by default only binds =<F12>= as
+=<XF86Explore= anyway.
+#+begin_src bash
+    t450s_product_name="20BW000DUS"
+    if [ $(sudo -S dmidecode --string system-product-name) = $t450s_product_name ]
+    then
+        # F12 <-> XF86Explore
+        xmodmap -e "keycode 152 = F12" \
+                -e "keycode 96  = XF86Explorer"
+
+        # F11 <-> XF86LaunchA
+        xmodmap -e "keycode 128 = F11" \
+                -e "keycode 95  = XF86LaunchA"
+
+        # F10 <-> XF86Search
+        xmodmap -e "keycode 225 = F10" \
+                -e "keycode 76  = XF86Search"
+
+        # F9 <-> XF86Tools
+        xmodmap -e "keycode 179 = F9" \
+                -e "keycode 75  = XF86Tools"
+
+        xmodmap -pke > ~/.Xmodmap
+        echo "xmodmap .Xmodmap" >> ~/.xinitrc
+    fi
+#+end_src
+
 * Development
 ** Git
 See the =git= directory for more information.
