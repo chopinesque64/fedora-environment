@@ -3,7 +3,7 @@
 #+AUTHOR: Nathanael Gentry
 #+EMAIL: ngentry1@liberty.edu
 #+options: toc:nil num:nil
-#+PROPERTY: header-args :tangle yes :session default
+#+PROPERTY: header-args :tangle yes :session default :results output silent
 
 * Bootstrap
 ** Macros
