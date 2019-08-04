@@ -245,3 +245,22 @@ Once we can daemonize DavMail, this will be the configuration to do it.
   sudo cp $PWD/davmail/davmail@.user_service /usr/lib/systemd/user/davmail@.service
   systemctl --user enable --now davmail@server
 #+end_src
+
+** OfflineIMAP
+Compared to DavMail, OfflineIMAP feels like a breeze! In our setup, OfflineIMAP will talk to the IMAP gateway that DavMail creates for the remote Exchange server that cruelly disallows direct IMAP access. Authentication happens via GNOME Keyring.
+#+begin_src sh
+  $install offlineimap
+  $stow offlineimap
+#+end_src
+
+** =mu=
+Note that the Emacs frontend =mu4e= comes with =mu=, which did not install correctly from the package manager. We build =mu= from source and put the =mu4e= directory in the local =site-lisp=.
+#+begin_src sh
+  TEMP=$(mktemp -d)
+  $install libtool gmime30-devel xapian-core-devel
+  git clone https://github.com/djcb/mu
+  cd $TEMP/mu
+  ./autogen.sh && ./configure && make
+  sudo mv mu4e /usr/share/emacs/site-lisp
+  cd -
+#+end_src

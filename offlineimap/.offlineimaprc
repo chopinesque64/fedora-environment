@@ -1,0 +1,45 @@
+[general]
+accounts = Gmail, Exchange
+maxsyncaccounts = 2
+pythonfile = ~/.offlineimap.py
+
+[Account Gmail]
+localrepository = LocalGmail
+remoterepository = RepositoryGmail
+autorefresh = 5
+quick = 10
+postsynchook = mu index --maildir ~/postoffice/
+
+[Repository LocalGmail]
+type = Maildir
+localfolders = ~/postoffice/Gmail
+
+[Repository RepositoryGmail]
+type = Gmail
+maxconnections = 2
+remoteusereval = get_val_from_attrs("username", "repo", "Gmail")
+remotepasseval = get_pw_from_attrs("repo", "Gmail")
+folderfilter = lambda foldername: foldername not in ['[Gmail]/All Mail', '[Gmail]/Important']
+sslcacertfile = /etc/pki/tls/certs/ca-bundle.crt
+ssl_version = tls1_2
+
+[Account Exchange]
+localrepository = LocalExchange
+remoterepository = RemoteExchange
+autorefresh = 5
+quick = 10
+postsynchook = mu index --maildir ~/postoffice/
+
+[Repository LocalExchange]
+type = Maildir
+localfolders = ~/postoffice/Exchange
+
+[Repository RemoteExchange]
+type = IMAP
+maxconnections = 2
+remotehost = localhost
+remoteport = 1143
+remoteusereval = get_val_from_attrs("username", "repo", "Exchange")
+remotepasseval = get_pw_from_attrs("repo", "Exchange")
+sslcacertfile = /etc/pki/tls/certs/ca-bundle.crt
+ssl = no
