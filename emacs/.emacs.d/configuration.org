@@ -4,6 +4,7 @@
 #+OPTIONS: toc:nil num:nil
 
 * Bootstrap
+** =use=package
 My =init.el= sets up MELPA in the package manager and installs =use-package.el= so all the configuration here works, even on a new install. Here, we make this happen by ensuring packages are installed before we use them.
 #+begin_src emacs-lisp
   (require 'use-package-ensure)
@@ -20,6 +21,7 @@ Tell emacs where our linux configuration document lives.
   (setq linux-configuration-directory "~/projects/fedora-environment/")
 #+end_src
 
+** Temp File
 Add a temporary customization file.
 #+begin_src emacs-lisp
   (setq custom-file (make-temp-file "emacs-custom"))
@@ -59,7 +61,7 @@ Define some sensible utility functions.
 ** Peek Frame
 Tuhdo has an excellent tutorial on setting up popup frames for =rtags=, and I've generalized his code and made the popup undecorated but still resizable.
 
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
   (defun npg/make-peek-frame (in-frame-function &rest args)
     "Make a new frame for peeking definition"
     (let (summary
@@ -97,7 +99,7 @@ Tuhdo has an excellent tutorial on setting up popup frames for =rtags=, and I've
 #+end_src
 
 * Appearance
-** Decorations
+** Window
 Reclaim real estate, especially on my old X220T, by disabling window chrome.
 #+begin_src emacs-lisp
   (tool-bar-mode 0)
@@ -163,7 +165,7 @@ Give yourself the comfort of context, even if it gobbles some real estate.
   (global-display-line-numbers-mode)
 #+end_src
 
-Also show column numbers in the modeline
+Also show column numbers in the modeline.
 #+begin_src emacs-lisp
   (setq column-number-mode t)
 #+end_src
@@ -254,7 +256,6 @@ We'll add local mode hooks for flycheck.
 
 ** Keybindings
 Quickly open my Emacs and Fedora configuration org documents.
-
 #+begin_src emacs-lisp
   (defun npg/visit-emacs-config ()
     (interactive)
@@ -272,13 +273,11 @@ Quickly open my Emacs and Fedora configuration org documents.
 #+end_src
 
 Always kill the current buffer with keystroke.
-
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
   (global-set-key (kbd "C-x k") 'npg/kill-current-buffer)
 #+end_src
 
 When splitting a window, I always want focus in the new window.
-
 #+BEGIN_SRC emacs-lisp
   (defun nps/split-window-below-and-switch ()
     "Split the window horizontally, then switch to the new pane."
@@ -317,41 +316,56 @@ Nothing special to see here.
 #+end_src
 
 ** =projectile=
+Search for files within a project with =projectile-ag= through =C-c v=. Also
+bind =C-p= to fuzzy-searching within a project, and use the current directory as
+a project root when we don't have a defined project. This enables
+fuzzy-searching for files anywhere.
    #+begin_src emacs-lisp
-     (use-package projectile)
+     (use-package projectile
+       :bind
+       ("C-c v" . 'projectile-ag)
+       ("C-p" . 'projectile-find-file)
+
+       :config
+       (setq projectile-completion-system 'ivy
+             projectile-switch-project-action 'projectile-dired
+             projectile-require-project-root nil))
    #+end_src
 
-* Development Environments
-And to think of the untold hours I spent configuring C\C++ tags when I could have used this!
+Perhaps Sr. Speedbar is better, but let's try this for now.
+#+begin_src emacs-lisp
+  (use-package project-explorer
+    :bind ("C-x p" . project-explorer-open))
+#+end_src
 
+** =dumb-jump=
+And to think of the untold hours I spent configuring C\C++ tags when I could have used this!
 #+begin_src emacs-lisp
   (use-package dumb-jump
     :config
-    (global-set-key (kbd "M-.") 'dumb-jump-go))
+    (global-set-key (kbd "M-.") 'dumb-jump-go)
+    (setq dumb-jump-selector 'ivy))
 #+end_src
 
+* Development Environments
 ** Python
 Set up our =virtualenv= for =jedi=.
-
 #+begin_src emacs-lisp
   (npg/append-to-path "~/.local/bin")
 #+end_src
 
 Use =elpy= for a great IDE experience.
-
 #+begin_src emacs-lisp
   (use-package elpy
     :init (elpy-enable))
 #+end_src
 
 Check syntax with =flycheck=.
-
 #+begin_src emacs-lisp
   (add-hook 'elpy-mode-hook 'flycheck-mode)
 #+end_src
 
 Format code by PEP8 on save.
-
 #+begin_src emacs-lisp
   (use-package py-autopep8
   :init (add-hook 'elpy-mode-hook 'py-autopep8-enable-on-save))
@@ -361,7 +375,6 @@ Format code by PEP8 on save.
 
 ** C/C++
 Maybe =rtags= is a bit intense, but using it with =cmake-ide= works well now.
-
 #+begin_src emacs-lisp
   (use-package rtags
     :ensure flycheck-rtags
@@ -377,7 +390,6 @@ Maybe =rtags= is a bit intense, but using it with =cmake-ide= works well now.
 #+end_src
 
 Use =cmake-ide= to automate =rtags= processes in a CMake project.
-
 #+begin_src emacs-lisp
   (use-package cmake-ide
     :init (cmake-ide-setup))
@@ -385,7 +397,6 @@ Use =cmake-ide= to automate =rtags= processes in a CMake project.
 
 ** LaTeX
 Org will begin replacing pure LaTeX for notes and such, but I still complete homework in here.
-
 First, set up =pdf-tools= for full previews, and disable line numbers in PDF buffers.
 #+begin_src emacs-lisp
   (use-package pdf-tools
@@ -461,9 +472,29 @@ Synosaurus is hooked up to wordnet to provide access to a thesaurus. Hitting
   (define-key global-map "\C-xs" 'synosaurus-lookup)
 #+END_SRC
 
+*** Word Count
+This little [[https://www.emacswiki.org/emacs/wcMode][minor mode]] sets =mode-line-position= to display character count,
+word count, and line count.
+#+begin_src emacs-lisp
+      (setq mode-line-position
+        (append
+         mode-line-position
+         '((wc-mode
+      (6 (:eval (if (use-region-p)
+        (format " %d,%d,%d"
+          (abs (- (point) (mark)))
+          (count-words-region (point) (mark))
+          (abs (- (line-number-at-pos (point))
+            (line-number-at-pos (mark)))))
+            (format " %d,%d,%d"
+              (- (point-max) (point-min))
+              (count-words-region (point-min) (point-max))
+              (line-number-at-pos (point-max))))))
+      nil))))
+#+end_src
+
 * Terminal
 Use =multi-term= for login shell sessions.
-
 #+begin_src emacs-lisp
   (use-package multi-term
     :init
@@ -535,7 +566,11 @@ Store my org files in =~/documents/org=, and derive an agenda from all files sto
 #+end_src
 
 ** Tasks
-I am using these [[http://doc.norang.ca/org-mode.html][task states]], with some verbiage modification. A task should be in state =WAIT= when the task needs information from someone else; it should be set to =HOLD= when I don't have time to do it.
+*** States
+I am using these [[http://doc.norang.ca/org-mode.html][task states]], with some verbiage modification. A task should be
+in state =WAIT= when the task needs information from someone else; it should be
+set to =HOLD= when I don't have time to do it. Note that states =WAIT=,
+=HOLD=, and =DROP= request a note upon state shift.
 #+begin_src emacs-lisp
   (setq org-todo-keywords
         (quote ((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d)")
@@ -547,7 +582,7 @@ Since we have defined keys for each state, we can use fast selection with =C-c C
   (setq org-use-fast-todo-selection t)
 #+end_src
 
-Using =S-<arrow>=, easily change todo states without all the processing (e.g. setting timestamps and notes) of normal state cycling. Useful for fixing the status of an entry.
+Using =S-<arrow=, easily change task states without all the processing (e.g. setting timestamps and notes) of normal state cycling. Useful for fixing the status of an entry.
 #+begin_src emacs-lisp
   (setq org-treat-S-cursor-todo-selection-as-state-change nil)
 #+end_src

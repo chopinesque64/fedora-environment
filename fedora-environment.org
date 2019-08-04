@@ -53,6 +53,8 @@ Zsh provides out-of-the box completions and other goodies that far transcend =ba
 #+end_src
 
 ** Cinnamon
+
+*** =dconf= Configuration
 Load my Cinnamon interface with =dconf=. Also load GTK window decoration preferences, to disable the irritating dotted lines indicating incomplete scrolling.
 #+begin_src bash
   dconf load /org/cinnamon/ < $PWD/cinnamon/cinnamon-dconf

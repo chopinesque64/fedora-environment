@@ -12,5 +12,9 @@
   (package-refresh-contents)
   (package-install 'use-package))
 
+;; Follow symlinks into version control
+;;  (since our literate configuration lives there)
+(setq vc-follow-symlinks t)
+
 ;; Jump into our literate config
 (org-babel-load-file "~/.emacs.d/configuration.org")
