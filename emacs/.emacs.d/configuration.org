@@ -689,6 +689,32 @@ Record the time that a todo was archived.
   (setq org-log-done 'time)
 #+END_SRC
 
+** Tags
+Note that the =@= group, which contains location tags, functions like a bank of
+radio buttons: selecting one location will deselect another selection within the
+group. Note that some of the non-exclusive tags are applied by the task state changers.
+#+begin_src emacs-lisp
+  (setq org-tag-alist '(((:startgroup)
+                          ("@errand" . ?e)
+                          ("@campus" . ?c)
+                          ("@home" . ?H)
+                          ("@office" . o)
+                          (:endgroup)
+                          ("DROP" . ?d)
+                          ("WAIT" . ?w)
+                          ("HOLD" . ?h)
+                          ("PERSONAL" . ?P)
+                          ("SYSTEM" . ?S)
+                          ("LIBERTY" . ?l)
+                          ("RSCH" . ?r)
+                          ("NOTE" . ?n))))
+#+end_src
+
+Since we have defined single keys for tag application, let's use them.
+#+begin_src emacs-lisp
+  (setq org-fast-tag-selection-single-key (quote expert))
+#+end_src
+
 ** Projects
 Here are some helper functions, from [[http://doc.norang.ca/org-mode.html#Projects][norang]], that the agenda uses for project
 display. These assume a lazy project definition: any task with a subtask is a
