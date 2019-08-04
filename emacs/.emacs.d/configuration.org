@@ -113,6 +113,14 @@ Tuhdo has an excellent tutorial on setting up popup frames for =rtags=, and I've
       ;; 5. Make frame visible again
       (make-frame-visible doc-frame)))
 #+end_src
+** Buffer Mode
+#+begin_src emacs-lisp
+  (defun npg/buffer-mode (&optional buffer-or-name)
+    "Returns the major mode associated with a buffer.
+  If buffer-or-name is nil return current buffer's mode."
+    (buffer-local-value 'major-mode
+     (if buffer-or-name (get-buffer buffer-or-name) (current-buffer))))
+#+end_src
 
 * Appearance
 ** Window
@@ -955,6 +963,18 @@ Define a few common tasks as capture templates. Specifically, I frequently:
   (setq org-capture-templates
         (quote (("t" "todo" entry (file org-capture-file)
                  "* TODO %?\n%U\n%a\n" :clock-in t :clock-resume t))))
+Define some custom actions to take on completion or termination of a capture.
+Right now, this just automatically marks for refile any message on which we
+successfully complete a capture.
+#+begin_src emacs-lisp
+  (defun npg/org-capture-after-finalize ()
+    (if org-note-abort ()
+      (if (equal (npg/buffer-mode) 'mu4e-headers-mode)
+           (mu4e-headers-mark-for-refile)
+         (if (equal (npg/buffer-mode) 'mu4e-view-mode)
+             (mu4e-view-mark-for-refile)))))
+
+  (add-hook 'org-capture-after-finalize-hook 'npg/org-capture-after-finalize)
 #+end_src
 
 ** Refile
