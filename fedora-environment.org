@@ -199,3 +199,49 @@ Let's try this out as a backend for an emacs thesaurus.
 #+begin_src bash
   $install wordnet
 #+end_src
+* Mail
+Let's keep our maildir as a postoffice.
+#+begin_src sh
+  $postoffice_location=$HOME/postoffice
+  $maildir_location=$postoffice_location/Mail
+
+  [ -d $maildir_location ] || mkdir -p $maildir_location
+#+end_src
+
+** DavMail
+DavMail gives a Microsoft Exchange Email/CalDav/CardDav/LDAP gateway, so we can use any mail client with Exchange and Officd 365. Useful for universities whose IT departments actively suppress open-source software on the network.
+
+*** Installation
+Get the trunk build, and install it in paths imitating those of the [[https://aur.archlinux.org/packages/davmail/][AUR package]].
+This will later simplify installing the daemon, as we can use the servicefiles verbatim from AUR.
+
+Note that the trunk build's =davmail= script does not work when called from a symlink. Using the script from AUR fixes this, so we also copy it over.
+#+begin_src sh
+  TEMP=$(mktemp -d)
+  davmail_location=/usr/share/java/davmail
+  [ -d $davmail_location ] || sudo mkdir -p $davmail_location
+  wget -O $TEMP/davmail-trunk.zip \
+       'https://ci.appveyor.com/api/projects/mguessan/davmail/artifacts/dist%2Fdavmail-5.2.0-trunk.zip?job=Environment%3A%20JAVA_HOME%3DC%3A%5CProgram%20Files%5CJava%5Cjdk1.8.0' && \
+      sudo unzip $TEMP/davmail-trunk.zip -d $davmail_location
+  sudo cp $PWD/davmail/davmail.sh $davmail_location/davmail
+  sudo ln -sf $davmail_location/davmail /usr/bin/davmail
+#+end_src
+
+Link our configuration into the home directory. Once we can migrate to a service, the configuration directory will become =/etc/davmail=.
+#+begin_src sh
+  ln -sf {$PWD/davmail,~}/.davmail.properties
+#+end_src
+
+*** Desktop
+Once DavMail catches up with some universities' efforts to outwit open-sourcers, this won't be necessary and we can run a headless service. Apparently we must also include a startup delay, as
+#+begin_src sh
+  sudo ln -sf $PWD/davmail/davmail.desktop ~/.config/autostart/
+#+end_src
+
+*** COMMENT Service
+Once we can daemonize DavMail, this will be the configuration to do it.
+#+begin_src sh
+  sudo cp $PWD/davmail/davmail@.system_service /usr/lib/systemd/system/davmail@.service
+  sudo cp $PWD/davmail/davmail@.user_service /usr/lib/systemd/user/davmail@.service
+  systemctl --user enable --now davmail@server
+#+end_src
