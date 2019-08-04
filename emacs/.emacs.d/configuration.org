@@ -916,4 +916,231 @@ Allow refile to create parent nodes with confirmation
 
 #+end_src
 
+* Email
+** Installation
+I will connect =mu4e= to =offlineimap=, which I install in my environment documentation.
+#+begin_src emacs-lisp
+  (add-to-list 'load-path "/usr/share/emacs/site-lisp/mu4e")
+  (require 'mu4e)
+#+end_src
+
+I like to think of my mail as living in a Postoffice rather than a Maildir. Perhaps it's just the Brit in me.
+#+begin_src emacs-lisp
+  (setq mu4e-maildir "~/postoffice")
+#+end_src
+
+By officially registering =mu4e= here, we can start a message with =C-x m=.
+#+begin_src emacs-lisp
+  (setq mail-user-agent 'mu4e-user-agent)
+#+end_src
+
+Rather than installing an =offlineimap= timer in =systemctl=, let's have =mu4e= call one-off updates for us by its own timer. I haven't yet investigated the relative performance implications.
+#+begin_src emacs-lisp
+    (setq mu4e-get-mail-command "offlineimap -o"
+          mu4e-update-interval 3600)
+#+end_src
+
+Don't ask us about quitting =mu4e=.
+#+begin_src emacs-lisp
+  (setq mu4e-confirm-quit nil)
+#+end_src
+
+** Contexts
+See the [[file:~/.offlineimaprc][OfflineIMAP Config]] for inbound mail.
+
+We send all messages by SMTP.
+#+begin_src emacs-lisp
+  (setq message-send-mail-function 'smtpmail-send-it)
+#+end_src
+
+*** Gmail
+#+begin_src emacs-lisp
+  (let ((gmail-setup-vars '((smtpmail-smtp-server   . "smtp.gmail.com")
+                            (smtpmail-stream-type   . starttls)
+                            (smtpmail-smtp-service  .  587)
+                            (mu4e-maildir-shortcuts . (("/Gmail/INBOX" . ?i)
+                                                       ("/Gmail/[Gmail].Sent Mail"   . ?s)
+                                                       ("/Gmail/[Gmail].Trash"       . ?t)))))
+        (gmail-prefix "[Gmail].")
+        (gmail-sent-folder "Sent Mail")
+        (gmail-trash-folder "Trash")
+        (gmail-drafts-folder "Drafts"))
+
+      (make-mu4e-context-account
+       :name "Gmail"
+       :user-mail-address npg/gmail-address
+       :sent-folder (concat gmail-prefix gmail-sent-folder)
+       :trash-folder (concat gmail-prefix gmail-trash-folder)
+       :drafts-folder (concat gmail-prefix gmail-drafts-folder)
+       :vars gmail-setup-vars))
+#+end_src
+
+*** Exchange
+#+begin_src emacs-lisp
+  (let ((exchange-setup-vars '((smtpmail-smtp-server  . "localhost")
+                               (smtpmail-smtp-service . 1025)
+                               (smtpmail-stream-type  . network)
+                               (mu4e-maildir-shortcuts . (("/Exchange/INBOX" . ?i)
+                                                          ("/Exchange/Sent" . ?s)
+                                                          ("/Exchange/Trash" . ?t)))))
+        (exchange-sent-folder "Sent")
+        (exchange-trash-folder "Trash")
+        (exchange-refile-folder "Archive")
+        (exchange-drafts-folder "Drafts"))
+
+      (make-mu4e-context-account
+       :name "Exchange"
+       :user-mail-address npg/exchange-address
+       :sent-folder exchange-sent-folder
+       :trash-folder exchange-trash-folder
+       :drafts-folder exchange-drafts-folder
+       :refile-folder exchange-refile-folder
+       :vars exchange-setup-vars))
+#+end_src
+
+** Headers
+Open the Exchange inbox with =C-c m=.
+#+begin_src emacs-lisp
+    (defun npg/visit-inbox ()
+      (interactive)
+      (mu4e~headers-jump-to-maildir "/Exchange/INBOX"))
+
+    (global-set-key (kbd "C-c m") 'npg/visit-inbox)
+#+end_src
+
+Only move messages to the trash folder; do not mark them as deleted.
+In other words, do not add =+T= before =-N= so message is not marked IMAP-deleted. See [[https://github.com/djcb/mu/issues/1136][mu #1136]].
+#+begin_src emacs-lisp
+  (setf (alist-get 'trash mu4e-marks)
+        (list :char '("d" . "▼")
+              :prompt "dtrash"
+              :dyn-target (lambda (target msg)
+                            (mu4e-get-trash-folder msg))
+              :action (lambda (docid msg target)
+                        (mu4e~proc-move docid (mu4e~mark-check-target target) "-N"))))
+#+end_src
+
+Optimize display for split window; do not reproduce the subject line within threads.
+#+begin_src emacs-lisp
+  (setq mu4e-headers-fields
+      '( (:human-date     .  25)
+         (:flags          .   4)
+         (:from           .  22)
+         (:thread-subject .  nil)))
+#+end_src
+
+Inside the header view, refresh with =o=.
+#+begin_src emacs-lisp
+    (define-key mu4e-headers-mode-map (kbd "o") 'mu4e-update-mail-and-index)
+#+end_src
+
+Quit =mu4e= immediately from header view with =z=.
+#+begin_src emacs-lisp
+  (define-key mu4e-headers-mode-map (kbd "z") 'mu4e-quit)
+#+end_src
+
+** Composition
+Auto-fill mode, which automatically inserts hard linebreaks, is quite unhelpful for messages that will be seen on other clients. Let's use soft breaks instead, so we don't drive our non-Emacs friends crazy.
+#+begin_src emacs-lisp
+  (add-hook 'mu4e-compose-mode-hook (lambda ()
+                                 (auto-fill-mode -1)
+                                 (visual-line-mode)))
+#+end_src
+
+When I'm composing a new email, default to using the first context.
+#+BEGIN_SRC emacs-lisp
+  (setq mu4e-compose-context-policy 'pick-first)
+#+END_SRC
+
+Enable Org-style tables and list manipulation.
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'message-mode-hook 'turn-on-orgtbl)
+  (add-hook 'message-mode-hook 'turn-on-orgstruct++)
+#+END_SRC
+
+Once I've sent a message, kill the associated buffer instead of just burying it.
+#+BEGIN_SRC emacs-lisp
+  (setq message-kill-buffer-on-exit t)
+#+END_SRC
+
+** Replies
+So replies quote correctly on other clients, change the reply header string to imitate Gmail.
+#+begin_src emacs-lisp
+  (defun npg/message-insert-compatible-citation-line ()
+    "Based off `message-insert-citation-line`."
+    (when message-reply-headers
+      (insert "On " (mail-header-date message-reply-headers) " ")
+      (insert (mail-header-from message-reply-headers) " wrote...")
+      (newline)
+      (newline)))
+
+  (setq message-citation-line-function 'npg/message-insert-compatible-citation-line)
+#+end_src
+
+** Reader
+Display the sender's email address along with their name.
+#+BEGIN_SRC emacs-lisp
+  (setq mu4e-view-show-addresses t)
+#+END_SRC
+
+While HTML emails are undeniably sinful, we often have to read them. That's
+sometimes best done in a browser. This effectively binds =a h= to open the
+current email in my default Web browser.
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'mu4e-view-actions '("html in browser" . mu4e-action-view-in-browser) t)
+#+END_SRC
+
+** Signatures
+These are my plain-text email signatures.
+#+begin_src emacs-lisp
+    (defvar npg/email-signatures)
+    (setq npg/email-signatures '(("formal" . (concat
+                                              "Nathanael Gentry\n"
+                                              "Mathematics, Liberty University\n"
+                                              "Class of 2021\n"))
+                                 ("personal" . "Nathanael Gentry\n")))
+#+end_src
+
+Thanks to Rob Stewart for the =mu4e-read-option= idea.
+#+begin_src emacs-lisp
+    (defun npg/mu4e-choose-signature ()
+      "Insert one of a number of sigs"
+      (interactive)
+      (let ((message-signature
+             (mu4e-read-option "Signature:"
+                               npg/email-signatures)))
+        (message-insert-signature)))
+
+    (add-hook 'mu4e-compose-mode-hook
+              (lambda () (local-set-key (kbd "C-c C-w") #'npg/mu4e-choose-signature)))
+#+end_src
+
+** Notifications
+We use the =mu4e-alert= package to give modeline mail alerts.
+#+begin_src emacs-lisp
+  (use-package mu4e-alert
+    :after mu4e
+    :init
+    (setq mu4e-alert-interesting-mail-query
+          (concat
+           "flag:unread maildir:/Exchange/INBOX "
+           "OR "
+           "flag:unread maildir:/Gmail/INBOX"))
+    (mu4e-alert-enable-mode-line-display)
+
+    (defun npg/refresh-mu4e-alert-mode-line ()
+      (interactive)
+      (mu4e-alert-enable-mode-line-display))
+
+    (run-with-timer 0 3600 'npg/refresh-mu4e-alert-mode-line))
+#+end_src
+
+** Org
+If we capture a todo while in =mu4e= header mode, store a link to the message itself, not the header query.
+
+As noted at [[http://pragmaticemacs.com/emacs/master-your-inbox-with-mu4e-and-org-mode/][Pragmatic Emacs]], this allows creating a todo for messages that need action, and then archiving it since it no longer needs to stay in the inbox -- we have a direct link to it in the todo.
+#+begin_src emacs-lisp
+  (require 'org-mu4e)
+  (setq org-mu4e-link-query-in-headers-mode nil)
+#+end_src
 
