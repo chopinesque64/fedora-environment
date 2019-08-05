@@ -582,13 +582,30 @@ Use =multi-term= for login shell sessions.
 #+end_src
 
 * Org
+** Installation
  We have already installed the Org package archive, so let's ensure we're using that latest released version with contributions.
  #+begin_src emacs-lisp
    (use-package org
      :ensure org-plus-contrib)
  #+end_src
 
+** Keybindings
+Let's add these sensible keybindings.
+#+begin_src emacs-lisp
+  (global-set-key (kbd "C-c l") 'org-store-link)
+  (global-set-key (kbd "C-c a") 'org-agenda)
+  (global-set-key (kbd "C-c b") 'org-iswitchb)
+#+end_src
+
+Open source block editor (=C-c '=) in a split window; make formats and tabs native.
+#+begin_src emacs-lisp
+  (setq org-src-fontify-natively t
+        org-src-tab-acts-natively t
+        org-src-window-setup 'split-window-below)
+#+end_src
+
 ** Defaults
+*** Editor
 Indent headings by default, and use =yasnippet=.
 #+begin_src emacs-lisp
   (dolist (mode-hook
@@ -607,13 +624,7 @@ Let's use =ido= in here.
   (setq org-completion-use-ido t)
 #+end_src
 
-Open source block editor (=C-c '=) in a split window; make formats and tabs native.
-#+begin_src emacs-lisp
-  (setq org-src-fontify-natively t
-        org-src-tab-acts-natively t
-        org-src-window-setup 'split-window-below)
-#+end_src
-
+*** Display
 Since =nord-theme= doesn't have good heading contrast, use bullet heading indicators.
 #+begin_src emacs-lisp
   (use-package org-bullets
@@ -625,17 +636,83 @@ And change from the distracting default ellipsis.
   (setq org-ellipsis " ▼ ")
 #+end_src
 
+Let's set =org-column-view= to emphasize timekeeping.
+#+begin_src emacs-lisp
+  (setq org-columns-default-format "%80ITEM(Task) %10Effort(Effort){:} %10CLOCKSUM")
+#+end_src
+
+** Export
+*** Oxen
+Allow export to markdown and beamer (for presentations).
+#+BEGIN_SRC emacs-lisp
+  (require 'ox-md)
+  (require 'ox-beamer)
+#+END_SRC
+
+*** Babel
+Don't ask before evaluating code blocks.
+#+BEGIN_SRC emacs-lisp
+  (setq org-confirm-babel-evaluate nil)
+#+END_SRC
+
+Allow =babel= to evaluate Emacs lisp, Python, shell, dot, or Gnuplot code.
+#+BEGIN_SRC emacs-lisp
+  (use-package gnuplot)
+
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((emacs-lisp . t)
+     (python . t)
+     (shell . t)
+     (dot . t)
+     (gnuplot . t)))
+#+END_SRC
+
+Allow editing JSON.
+#+begin_src emacs-lisp
+  (add-to-list 'org-src-lang-modes '("json" . json))
+#+end_src
+
+*** HTML
+Make sure we have the latest version of =htmlize= installed by default.
+#+begin_src emacs-lisp
+  (use-package htmlize)
+#+end_src
+
+Don't include a footer with my contact and publishing information at the bottom
+of every exported HTML document.
+#+BEGIN_SRC emacs-lisp
+  (setq org-html-postamble nil)
+#+END_SRC
+
+Exporting to HTML and opening the results triggers =/usr/bin/sensible-browser=,
+which checks the =$BROWSER= environment variable to choose the right browser.
+I'd like to always use Firefox, so:
+#+BEGIN_SRC emacs-lisp
+  (setq browse-url-browser-function 'browse-url-generic
+        browse-url-generic-program "firefox")
+
+  (setq proess-connection-type nil)
+#+END_SRC
+
 ** Paths
-Store my org files in =~/documents/org=, and derive an agenda from all files stored therein.
+Store my org files in =~/documents/org=.
 #+begin_src emacs-lisp
   (setq org-directory "~/documents/org")
 
-  (defun org-file-path (filename)
+  (defun npg/org-file-path (filename)
     "Return the absolute address of an org file, given its relative name."
     (concat (file-name-as-directory org-directory) filename))
 
-  (setq org-agenda-files (list (file-name-as-directory org-directory)))
-  (setq org-capture-file (org-file-path "capture.org"))
+  (setq org-index-file (npg/org-file-path "index.org")
+        org-jot-file (npg/org-file-path "jot.org")
+        org-journal-file (npg/org-file-path "journal.org")
+        org-archive-location (concat (npg/org-file-path "archive.org") "::*%s"))
+#+end_src
+
+ Derive the agenda from =index.org=, the project index.
+#+begin_src emacs-lisp
+  (setq org-agenda-files (list org-index-file))
 #+end_src
 
 ** Tasks
@@ -650,6 +727,18 @@ set to =HOLD= when I don't have time to do it. Note that states =WAIT=,
                 (sequence "WAIT(w@/!)" "HOLD(h@/!)" "|" "DROP(c@/!)" "MEET"))))
 #+end_src
 
+#+begin_src emacs-lisp
+  (setq org-todo-keyword-faces
+        '(("TODO" :foreground "light salmon" :weight bold)
+        ("NEXT" :foreground "SteelBlue1" :weight bold)
+        ("DONE" :foreground "light green" :weight bold)
+        ("WAIT" :foreground "MediumOrchid1" :weight bold)
+        ("HOLD" :foreground "Orchid1" :weight bold)
+        ("DROP" :foreground "VioletRed1" :weight bold)
+        ("MEET" :foreground "light green" :weight bold)))
+
+#+end_src
+
 Since we have defined keys for each state, we can use fast selection with =C-c C-t KEY=.
 #+begin_src emacs-lisp
   (setq org-use-fast-todo-selection t)
@@ -660,6 +749,7 @@ Using =S-<arrow=, easily change task states without all the processing (e.g. set
   (setq org-treat-S-cursor-todo-selection-as-state-change nil)
 #+end_src
 
+*** Tag Integration
 To aid agenda filtering, auto-update tags whenever the state changes.
 #+begin_src emacs-lisp
    (setq org-todo-state-tags-triggers
@@ -672,16 +762,17 @@ To aid agenda filtering, auto-update tags whenever the state changes.
                 ("DONE" ("WAIT") ("DROP") ("HOLD")))))
 #+end_src
 
+*** Archive
 Hitting =C-c C-x C-s= will mark a todo as done and move it to an appropriate
 place in the archive.
 #+BEGIN_SRC emacs-lisp
-  (defun hrs/mark-done-and-archive ()
+  (defun npg/mark-done-and-archive ()
     "Mark the state of an org-mode item as DONE and archive it."
     (interactive)
     (org-todo 'done)
     (org-archive-subtree))
 
-  (define-key org-mode-map (kbd "C-c C-x C-s") 'hrs/mark-done-and-archive)
+  (define-key org-mode-map (kbd "C-c C-x C-s") 'npg/mark-done-and-archive)
 #+END_SRC
 
 Record the time that a todo was archived.
@@ -703,11 +794,11 @@ group. Note that some of the non-exclusive tags are applied by the task state ch
                           ("DROP" . ?d)
                           ("WAIT" . ?w)
                           ("HOLD" . ?h)
-                          ("PERSONAL" . ?P)
-                          ("SYSTEM" . ?S)
-                          ("LIBERTY" . ?l)
+                          ("PERS" . ?P)
+                          ("SYS" . ?S)
+                          ("LIBRTY" . ?l)
                           ("RSCH" . ?r)
-                          ("NOTE" . ?n))))
+                          ("MUSC" . ?m))))
 #+end_src
 
 Since we have defined single keys for tag application, let's use them.
@@ -974,7 +1065,21 @@ the =NEXT= designation.
       (if (bh/is-subproject-p)
           nil
         next-headline)))
+
+  (defun bh/find-project-task ()
+    "Move point to the parent (project) task if any"
+    (save-restriction
+      (widen)
+      (let ((parent-task (save-excursion (org-back-to-heading 'invisible-ok) (point))))
+        (while (org-up-heading-safe)
+          (when (member (nth 2 (org-heading-components)) org-todo-keywords-1)
+            (setq parent-task (point))))
+        (goto-char parent-task)
+        parent-task)))
 #+end_src
+
+#+RESULTS:
+: bh/find-project-task
 
 ** Capture
 Let's bind =org-capture= to something sensible.
@@ -982,17 +1087,15 @@ Let's bind =org-capture= to something sensible.
   (global-set-key (kbd "C-c c") 'org-capture)
 #+end_src
 
-Define a few common tasks as capture templates. Specifically, I frequently:
-  - Maintain a todo list
-
+Define a few common tasks as capture templates.
 #+begin_src emacs-lisp
   (setq org-capture-templates
         ;; todo
-        '(("t" "todo" entry (file org-capture-file)
+        '(("t" "todo" entry (file+headline org-index-file "INBOX")
            "* TODO %?\n%U\n%a\n" :clock-in t :clock-resume t)
 
           ;; email answer (auto)
-          ("a" "answer" entry (file org-capture-file)
+          ("e" "email" entry (file+headline org-index-file "INBOX")
            "* NEXT Answer %:from on %:subject\nSCHEDULED: %t\n%U\n%a\n"
            :clock-in t :clock-resume t :immediate-finish t)
 
@@ -1001,7 +1104,7 @@ Define a few common tasks as capture templates. Specifically, I frequently:
            "* %?\n:PROPERTIES:\n:CREATED: %U\n :END:\n\n" :empty-lines 1)
 
           ;; meeting
-          ("m" "meeting" entry (file org-capture-file)
+          ("m" "meeting" entry (file+headline org-index-file "INBOX")
            "* MEETING: %? :MEETING:\n%U" :clock-in t :clock-resume t)
 
           ;; journal entry
@@ -1024,10 +1127,10 @@ successfully complete a capture.
 #+end_src
 
 ** Refile
-We can refile into this file and any agenda file, up to 3 levels deep.
+We can refile into the current file and the index file, up to 3 levels deep.
 #+begin_src emacs-lisp
   (setq org-refile-targets '((nil :maxlevel . 3)
-                             (org-agenda-files :maxlevel . 3)))
+                             (org-agenda-file :maxlevel . 3)))
 #+end_src
 
 Use full outline paths for refile targets, so ido works well.
@@ -1036,11 +1139,28 @@ Use full outline paths for refile targets, so ido works well.
   (setq org-outline-path-complete-in-steps nil)
 #+end_src
 
-Allow refile to create parent nodes with confirmation
+Allow =refile= to create parent nodes with confirmation.
 #+begin_src emacs-lisp
   (setq org-refile-allow-creating-parent-nodes 'confirm)
 #+end_src
 
+** Archive
+Hitting =C-c C-x C-s= will mark a todo as done and move it to an appropriate
+place in the archive.
+#+BEGIN_SRC emacs-lisp
+  (defun hrs/mark-done-and-archive ()
+    "Mark the state of an org-mode item as DONE and archive it."
+    (interactive)
+    (org-todo 'done)
+    (org-archive-subtree))
+
+  (define-key org-mode-map (kbd "C-c C-x C-s") 'hrs/mark-done-and-archive)
+#+END_SRC
+
+Record the time that a todo was archived.
+#+BEGIN_SRC emacs-lisp
+  (setq org-log-done 'time)
+#+END_SRC
 #+begin_src emacs-lisp
 #+end_src
 
