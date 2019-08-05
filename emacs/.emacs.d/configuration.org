@@ -2,9 +2,10 @@
 #+AUTHOR: Nathanael Gentry
 #+EMAIL: ngentry1@liberty.edu
 #+OPTIONS: toc:nil num:nil
+#+PROPERTY: header-args :results output silent
 
 * Bootstrap
-** =use=package
+** =use-package=
 My =init.el= sets up MELPA in the package manager and installs =use-package.el= so all the configuration here works, even on a new install. Here, we make this happen by ensuring packages are installed before we use them.
 #+begin_src emacs-lisp
   (require 'use-package-ensure)
@@ -589,22 +590,6 @@ Use =multi-term= for login shell sessions.
      :ensure org-plus-contrib)
  #+end_src
 
-** Keybindings
-Let's add these sensible keybindings.
-#+begin_src emacs-lisp
-  (global-set-key (kbd "C-c l") 'org-store-link)
-  (global-set-key (kbd "C-c a") 'org-agenda)
-  (global-set-key (kbd "C-c b") 'org-iswitchb)
-#+end_src
-
-Open source block editor (=C-c '=) in a split window; make formats and tabs native.
-#+begin_src emacs-lisp
-  (setq org-src-fontify-natively t
-        org-src-tab-acts-natively t
-        org-src-window-setup 'split-window-below)
-#+end_src
-
-** Defaults
 *** Editor
 Indent headings by default, and use =yasnippet=.
 #+begin_src emacs-lisp
@@ -636,9 +621,19 @@ And change from the distracting default ellipsis.
   (setq org-ellipsis " ▼ ")
 #+end_src
 
-Let's set =org-column-view= to emphasize timekeeping.
+** Keybindings
+Let's add these sensible keybindings.
 #+begin_src emacs-lisp
-  (setq org-columns-default-format "%80ITEM(Task) %10Effort(Effort){:} %10CLOCKSUM")
+  (global-set-key (kbd "C-c l") 'org-store-link)
+  (global-set-key (kbd "C-c a") 'org-agenda)
+  (global-set-key (kbd "C-c b") 'org-iswitchb)
+#+end_src
+
+Open source block editor (=C-c '=) in a split window; make formats and tabs native.
+#+begin_src emacs-lisp
+  (setq org-src-fontify-natively t
+        org-src-tab-acts-natively t
+        org-src-window-setup 'split-window-below)
 #+end_src
 
 ** Export
@@ -749,7 +744,7 @@ Using =S-<arrow=, easily change task states without all the processing (e.g. set
   (setq org-treat-S-cursor-todo-selection-as-state-change nil)
 #+end_src
 
-*** Tag Integration
+*** Tags
 To aid agenda filtering, auto-update tags whenever the state changes.
 #+begin_src emacs-lisp
    (setq org-todo-state-tags-triggers
@@ -763,7 +758,7 @@ To aid agenda filtering, auto-update tags whenever the state changes.
 #+end_src
 
 *** Archive
-Hitting =C-c C-x C-s= will mark a todo as done and move it to an appropriate
+Hitting =C-c C-x C-d= will mark a todo as done and move it to an appropriate
 place in the archive.
 #+BEGIN_SRC emacs-lisp
   (defun npg/mark-done-and-archive ()
@@ -772,7 +767,7 @@ place in the archive.
     (org-todo 'done)
     (org-archive-subtree))
 
-  (define-key org-mode-map (kbd "C-c C-x C-s") 'npg/mark-done-and-archive)
+  (define-key org-mode-map (kbd "C-c C-x C-d") 'npg/mark-done-and-archive)
 #+END_SRC
 
 Record the time that a todo was archived.
@@ -785,12 +780,12 @@ Note that the =@= group, which contains location tags, functions like a bank of
 radio buttons: selecting one location will deselect another selection within the
 group. Note that some of the non-exclusive tags are applied by the task state changers.
 #+begin_src emacs-lisp
-  (setq org-tag-alist '(((:startgroup)
+  (setq org-tag-alist '((:startgroup . nil)
                           ("@errand" . ?e)
                           ("@campus" . ?c)
                           ("@home" . ?H)
                           ("@office" . o)
-                          (:endgroup)
+                          (:endgroup . nil)
                           ("DROP" . ?d)
                           ("WAIT" . ?w)
                           ("HOLD" . ?h)
@@ -798,7 +793,7 @@ group. Note that some of the non-exclusive tags are applied by the task state ch
                           ("SYS" . ?S)
                           ("LIBRTY" . ?l)
                           ("RSCH" . ?r)
-                          ("MUSC" . ?m))))
+                          ("MUSC" . ?m)))
 #+end_src
 
 Since we have defined single keys for tag application, let's use them.
@@ -806,11 +801,97 @@ Since we have defined single keys for tag application, let's use them.
   (setq org-fast-tag-selection-single-key (quote expert))
 #+end_src
 
-** Projects
-Here are some helper functions, from [[http://doc.norang.ca/org-mode.html#Projects][norang]], that the agenda uses for project
-display. These assume a lazy project definition: any task with a subtask is a
-project. Note also that stuck projects are those that do not have a subtask with
-the =NEXT= designation.
+** Capture
+Let's bind =org-capture= to something sensible.
+#+begin_src emacs-lisp
+  (global-set-key (kbd "C-c c") 'org-capture)
+#+end_src
+
+Define a few common tasks as capture templates.
+#+begin_src emacs-lisp
+  (setq org-capture-templates
+    ;; todo
+    (("t" "todo" entry (file+headline org-index-file "INBOX")
+      "* TODO %?\n%U\n%a\n" :clock-in t :clock-resume t)
+
+    ;; email answer (auto)
+    ("e" "email" entry (file+headline org-index-file "INBOX")
+      "* NEXT Answer %:from on %:subject\nSCHEDULED: %t\n%U\n%a\n"
+      :clock-in t :clock-resume t :immediate-finish t)
+
+    ;; web bookmark
+    ("b" "webmark" entry (file+headline org-jot-file "Webmarks")
+     "* %?\n:PROPERTIES:\n:CREATED: %U\n :END:\n\n" :empty-lines 1)
+
+    ;; meeting
+    ("m" "meeting" entry (file+headline org-index-file "INBOX")
+     "* MEETING: %? :MEETING:\n%U" :clock-in t :clock-resume t)
+
+    ;; journal entry
+    ("j" "Journal" entry (file+datetree org-journal-file)
+     "* %?\n%U\n" :clock-in t :clock-resume t)))
+#+end_src
+
+Define some custom actions to take on completion or termination of a capture.
+Right now, this just automatically marks for refile any message on which we
+successfully complete a capture.
+#+begin_src emacs-lisp
+  (defun npg/org-capture-after-finalize ()
+    (if org-note-abort ()
+      (if (equal (npg/buffer-mode) 'mu4e-headers-mode)
+           (mu4e-headers-mark-for-refile)
+         (if (equal (npg/buffer-mode) 'mu4e-view-mode)
+             (mu4e-view-mark-for-refile)))))
+
+  (add-hook 'org-capture-after-finalize-hook 'npg/org-capture-after-finalize)
+#+end_src
+
+** Refile
+We can refile into the current file and the index file, up to 3 levels deep.
+#+begin_src emacs-lisp
+  (setq org-refile-targets '((nil :maxlevel . 3)
+                             (org-agenda-files :maxlevel . 3)))
+#+end_src
+
+Use full outline paths for refile targets, so ido works well.
+#+begin_src emacs-lisp
+  (setq org-refile-use-outline-path t)
+  (setq org-outline-path-complete-in-steps nil)
+#+end_src
+
+Allow =refile= to create parent nodes with confirmation.
+#+begin_src emacs-lisp
+  (setq org-refile-allow-creating-parent-nodes 'confirm)
+#+end_src
+
+** Archive
+Hitting =C-c C-x C-s= will mark a todo as done and move it to an appropriate
+place in the archive.
+#+BEGIN_SRC emacs-lisp
+  (defun hrs/mark-done-and-archive ()
+    "Mark the state of an org-mode item as DONE and archive it."
+    (interactive)
+    (org-todo 'done)
+    (org-archive-subtree))
+
+  (define-key org-mode-map (kbd "C-c C-x C-s") 'hrs/mark-done-and-archive)
+#+END_SRC
+
+Record the time that a todo was archived.
+#+BEGIN_SRC emacs-lisp
+  (setq org-log-done 'time)
+#+END_SRC
+
+** Agenda
+I have based this configuration on Gregory Stein's excellent [[https://github.com/gjstein/emacs.d/blob/e725a97a71c6236321f00c705085581f028c1580/config/gs-org.el][agenda configuration]], which it itself based
+on Bernt Hansen's [[http://doc.norang.ca/org-mode.html][rather overwhelming guide]].
+
+*** Projects
+Here are some project-management helper functions from the sources listed above.
+These assume a lazy project definition: any task with a subtask is a project. Note also that stuck projects
+are those that do not have a subtask with the =NEXT= designation.
+
+**** =bh=
 #+begin_src emacs-lisp
   (defun bh/is-project-p ()
     "Any task with a todo keyword subtask"
@@ -1078,93 +1159,238 @@ the =NEXT= designation.
         parent-task)))
 #+end_src
 
-#+RESULTS:
-: bh/find-project-task
-
-** Capture
-Let's bind =org-capture= to something sensible.
+**** =gjstein=
 #+begin_src emacs-lisp
-  (global-set-key (kbd "C-c c") 'org-capture)
+(defun gs/select-with-tag-function (select-fun-p)
+  (save-restriction
+    (widen)
+    (let ((next-headline
+	   (save-excursion (or (outline-next-heading)
+			       (point-max)))))
+      (if (funcall select-fun-p) nil next-headline))))
+
+(defun gs/select-projects ()
+  "Selects tasks which are project headers"
+  (gs/select-with-tag-function #'bh/is-project-p))
+(defun gs/select-project-tasks ()
+  "Skips tags which belong to projects (and is not a project itself)"
+  (gs/select-with-tag-function
+   #'(lambda () (and
+		 (not (bh/is-project-p))
+		 (bh/is-project-subtree-p)))))
+(defun gs/select-standalone-tasks ()
+  "Skips tags which belong to projects. Is neither a project, nor does it blong to a project"
+  (gs/select-with-tag-function
+   #'(lambda () (and
+		 (not (bh/is-project-p))
+		 (not (bh/is-project-subtree-p))))))
+(defun gs/select-projects-and-standalone-tasks ()
+  "Skips tags which are not projects"
+  (gs/select-with-tag-function
+   #'(lambda () (or
+		 (bh/is-project-p)
+		 (bh/is-project-subtree-p)))))
+
+(defun gs/org-agenda-project-warning ()
+  "Is a project stuck or waiting. If the project is not stuck,
+show nothing. However, if it is stuck and waiting on something,
+show this warning instead."
+  (if (gs/org-agenda-project-is-stuck)
+    (if (gs/org-agenda-project-is-waiting) " !W" " !S") ""))
+
+(defun gs/org-agenda-project-is-stuck ()
+  "Is a project stuck"
+  (if (bh/is-project-p) ; first, check that it's a project
+      (let* ((subtree-end (save-excursion (org-end-of-subtree t)))
+	     (has-next))
+	(save-excursion
+	  (forward-line 1)
+	  (while (and (not has-next)
+		      (< (point) subtree-end)
+		      (re-search-forward "^\\*+ NEXT " subtree-end t))
+	    (unless (member "WAITING" (org-get-tags-at))
+	      (setq has-next t))))
+	(if has-next nil t)) ; signify that this project is stuck
+    nil)) ; if it's not a project, return an empty string
+
+(defun gs/org-agenda-project-is-waiting ()
+  "Is a project stuck"
+  (if (bh/is-project-p) ; first, check that it's a project
+      (let* ((subtree-end (save-excursion (org-end-of-subtree t))))
+	(save-excursion
+	  (re-search-forward "^\\*+ WAITING" subtree-end t)))
+    nil)) ; if it's not a project, return an empty string
+
+;; Some helper functions for agenda views
+(defun gs/org-agenda-prefix-string ()
+  "Format"
+  (let ((path (org-format-outline-path (org-get-outline-path))) ; "breadcrumb" path
+	(stuck (gs/org-agenda-project-warning))) ; warning for stuck projects
+       (if (> (length path) 0)
+	   (concat stuck ; add stuck warning
+		   " [" path "]") ; add "breadcrumb"
+	 stuck)))
+
+(defun gs/org-agenda-add-location-string ()
+  "Gets the value of the LOCATION property"
+  (let ((loc (org-entry-get (point) "LOCATION")))
+    (if (> (length loc) 0)
+	(concat "{" loc "} ")
+      "")))
 #+end_src
 
-Define a few common tasks as capture templates.
+*** Navigation
+**** Helpers
+Jump sections by searching for the chosen section delimiter.
 #+begin_src emacs-lisp
-  (setq org-capture-templates
-        ;; todo
-        '(("t" "todo" entry (file+headline org-index-file "INBOX")
-           "* TODO %?\n%U\n%a\n" :clock-in t :clock-resume t)
-
-          ;; email answer (auto)
-          ("e" "email" entry (file+headline org-index-file "INBOX")
-           "* NEXT Answer %:from on %:subject\nSCHEDULED: %t\n%U\n%a\n"
-           :clock-in t :clock-resume t :immediate-finish t)
-
-          ;; web bookmark
-          ("b" "webmark" entry (file+headline org-jot-file "Webmarks")
-           "* %?\n:PROPERTIES:\n:CREATED: %U\n :END:\n\n" :empty-lines 1)
-
-          ;; meeting
-          ("m" "meeting" entry (file+headline org-index-file "INBOX")
-           "* MEETING: %? :MEETING:\n%U" :clock-in t :clock-resume t)
-
-          ;; journal entry
-          ("j" "Journal" entry (file+datetree org-journal-file)
-           "* %?\n%U\n" :clock-in t :clock-resume t)))
-#+end_src
-
-Define some custom actions to take on completion or termination of a capture.
-Right now, this just automatically marks for refile any message on which we
-successfully complete a capture.
-#+begin_src emacs-lisp
-  (defun npg/org-capture-after-finalize ()
-    (if org-note-abort ()
-      (if (equal (npg/buffer-mode) 'mu4e-headers-mode)
-           (mu4e-headers-mark-for-refile)
-         (if (equal (npg/buffer-mode) 'mu4e-view-mode)
-             (mu4e-view-mark-for-refile)))))
-
-  (add-hook 'org-capture-after-finalize-hook 'npg/org-capture-after-finalize)
-#+end_src
-
-** Refile
-We can refile into the current file and the index file, up to 3 levels deep.
-#+begin_src emacs-lisp
-  (setq org-refile-targets '((nil :maxlevel . 3)
-                             (org-agenda-file :maxlevel . 3)))
-#+end_src
-
-Use full outline paths for refile targets, so ido works well.
-#+begin_src emacs-lisp
-  (setq org-refile-use-outline-path t)
-  (setq org-outline-path-complete-in-steps nil)
-#+end_src
-
-Allow =refile= to create parent nodes with confirmation.
-#+begin_src emacs-lisp
-  (setq org-refile-allow-creating-parent-nodes 'confirm)
-#+end_src
-
-** Archive
-Hitting =C-c C-x C-s= will mark a todo as done and move it to an appropriate
-place in the archive.
-#+BEGIN_SRC emacs-lisp
-  (defun hrs/mark-done-and-archive ()
-    "Mark the state of an org-mode item as DONE and archive it."
+  (defun gs/org-agenda-next-section ()
+    "Go to the next section in an org agenda buffer"
     (interactive)
-    (org-todo 'done)
-    (org-archive-subtree))
+    (if (search-forward "===" nil t 1)
+        (forward-line 1)
+      (goto-char (point-max)))
+    (beginning-of-line))
 
-  (define-key org-mode-map (kbd "C-c C-x C-s") 'hrs/mark-done-and-archive)
-#+END_SRC
-
-Record the time that a todo was archived.
-#+BEGIN_SRC emacs-lisp
-  (setq org-log-done 'time)
-#+END_SRC
-#+begin_src emacs-lisp
+  (defun gs/org-agenda-prev-section ()
+    "Go to the next section in an org agenda buffer"
+    (interactive)
+    (forward-line -2)
+    (if (search-forward "===" nil t -1)
+        (forward-line 1)
+  (goto-char (point-min))))
 #+end_src
 
+**** Keys
+Quickly view the agenda.
+#+begin_src emacs-lisp
+  (global-set-key (kbd "<f12>") 'org-agenda)
+#+end_src
 
+*** Defaults
+**** Views
+Bury, do not kill, the agenda buffer on =q=. Also restore windows after we quit.
+#+begin_src emacs-lisp
+  (setq org-agenda-sticky t)
+  (setq org-agenda-restore-windows-after-quit t)
+#+end_src
+
+Do not compact the block agenda view -- essential for our custom commands to
+show correctly.
+#+begin_src emacs-lisp
+  (setq org-agenda-compact-blocks nil)
+#+end_src
+
+Set the times to display in the time grid.
+#+begin_src emacs-lisp
+  (setq org-agenda-time-grid
+        (quote
+         ((daily today remove-match)
+          (800 1200 1600 2000)
+  "......" "----------------")))
+#+end_src
+
+**** Tasks
+Make sure that we cannot mark a parent task done when child tasks are still
+undone, and dim tasks that are so blocked.
+#+begin_src emacs-lisp
+  (setq org-enforce-todo-dependencies t)
+  (setq org-agenda-dim-blocked-tasks nil)
+#+end_src
+
+*** Layout
+#+begin_src emacs-lisp
+      (setq org-agenda-custom-commands
+            '(("h" "Habits" agenda "STYLE=\"habit\""
+         ((org-agenda-overriding-header "Habits")
+          (org-agenda-sorting-strategy
+           '(todo-state-down effort-up category-keep))))
+        (" " "Schedule" (
+              (agenda "" ((org-agenda-overriding-header "Today's Schedule:")
+                    (org-agenda-span 'day)
+                    (org-agenda-ndays 1)
+                    (org-agenda-start-on-weekday nil)
+                    (org-agenda-start-day "+0d")
+                    (org-agenda-todo-ignore-deadlines nil)))
+              (tags-todo "INBOX"
+                    ((org-agenda-overriding-header "Inbox:")
+                     (org-tags-match-list-sublevels nil)))
+              (tags-todo "-WAIT-HOLD-DROP/!NEXT"
+                   ((org-agenda-overriding-header "Next:")))
+              (tags-todo "-WAIT-HOLD-DROP/!"
+                   ((org-agenda-overriding-header "Active:")
+                    (org-agenda-skip-function 'gs/select-projects)))
+              (tags "ENDOFAGENDA"
+                    ((org-agenda-overriding-header "")
+                     (org-tags-match-list-sublevels nil)))
+              )
+         ((org-agenda-start-with-log-mode t)
+          (org-agenda-log-mode-items '(clock))
+          (org-agenda-prefix-format '((agenda . "  %-12:c%?-12t %(gs/org-agenda-add-location-string)% s")
+                    (timeline . "  % s")
+                    (todo . "  %(gs/org-agenda-prefix-string) ")
+                    (tags . "  %(gs/org-agenda-prefix-string) ")
+                    (search . "  %i %-12:c")))
+          (org-agenda-todo-ignore-deadlines 'near)
+          (org-agenda-todo-ignore-scheduled t)))
+
+        ("r" "Review" (
+              (tags-todo "INBOX"
+                    ((org-agenda-overriding-header "Refile:")
+                     (org-tags-match-list-sublevels nil)))
+              (tags-todo "-WAIT-HOLD-DROP/!NEXT"
+                   ((org-agenda-overriding-header "Next Tasks:")))
+              (tags-todo "-WAIT-HOLD-DROP/!"
+                   ((org-agenda-overriding-header "Active:")
+                    (org-agenda-skip-function 'gs/select-projects)))
+              (tags-todo "-WAIT-HOLD-DROP-INBOX-STYLE=\"habit\"/!-NEXT"
+                   ((org-agenda-overriding-header "Standalone:")
+                    (org-agenda-skip-function 'gs/select-standalone-tasks)))
+              (tags-todo "-WAIT-HOLD-DROP-INBOX/!-NEXT"
+                   ((org-agenda-overriding-header "Remaining:")
+                    (org-agenda-skip-function 'gs/select-project-tasks)))
+              (tags-todo "-HOLD-DROP/!WAIT"
+                   ((org-agenda-overriding-header "Waiting:")))
+              (tags-todo "HOLD-DROP/!"
+                    ((org-agenda-overriding-header "Holding:")
+                     (org-tags-match-list-sublevels nil)))
+              (tags "ENDOFAGENDA"
+                    ((org-agenda-overriding-header "")
+                     (org-tags-match-list-sublevels nil)))
+              )
+         ((org-agenda-start-with-log-mode t)
+          (org-agenda-log-mode-items '(clock))
+          (org-agenda-prefix-format '((agenda . "  %-12:c%?-12t %(gs/org-agenda-add-location-string)% s")
+                    (timeline . "  % s")
+                    (todo . "  %-12:c %(gs/org-agenda-prefix-string) ")
+                    (tags . "  %-12:c %(gs/org-agenda-prefix-string) ")
+                    (search . "  %i %-12:c")))
+          (org-agenda-todo-ignore-deadlines 'near)
+          (org-agenda-todo-ignore-scheduled t)))
+
+        ("a" "Agenda" ((agenda "") (alltodo))
+         ((org-agenda-ndays 10)
+          (org-agenda-start-on-weekday nil)
+          (org-agenda-start-day "-1d")
+          (org-agenda-start-with-log-mode t)
+          (org-agenda-log-mode-items '(closed clock state)))
+    )))
+#+end_src
+
+*** Post-Processing
+Remove empty agenda blocks.
+#+begin_src emacs-lisp
+  (defun gs/remove-agenda-regions ()
+    (save-excursion
+      (goto-char (point-min))
+      (let ((region-large t))
+        (while (and (< (point) (point-max)) region-large)
+    (set-mark (point))
+    (gs/org-agenda-next-section)
+    (if (< (- (region-end) (region-beginning)) 5) (setq region-large nil)
+      (if (< (count-lines (region-beginning) (region-end)) 4)
+          (delete-region (region-beginning) (region-end)))
+      )))))
+  (add-hook 'org-agenda-finalize-hook 'gs/remove-agenda-regions)
 #+end_src
 
 * Email
