@@ -1204,28 +1204,6 @@ We send all messages by SMTP.
   (setq message-send-mail-function 'smtpmail-send-it)
 #+end_src
 
-*** Gmail
-#+begin_src emacs-lisp
-  (let ((gmail-setup-vars '((smtpmail-smtp-server   . "smtp.gmail.com")
-                            (smtpmail-stream-type   . starttls)
-                            (smtpmail-smtp-service  .  587)
-                            (mu4e-maildir-shortcuts . (("/Gmail/INBOX" . ?i)
-                                                       ("/Gmail/[Gmail].Sent Mail"   . ?s)
-                                                       ("/Gmail/[Gmail].Trash"       . ?t)))))
-        (gmail-prefix "[Gmail].")
-        (gmail-sent-folder "Sent Mail")
-        (gmail-trash-folder "Trash")
-        (gmail-drafts-folder "Drafts"))
-
-      (make-mu4e-context-account
-       :name "Gmail"
-       :user-mail-address npg/gmail-address
-       :sent-folder (concat gmail-prefix gmail-sent-folder)
-       :trash-folder (concat gmail-prefix gmail-trash-folder)
-       :drafts-folder (concat gmail-prefix gmail-drafts-folder)
-       :vars gmail-setup-vars))
-#+end_src
-
 *** Exchange
 #+begin_src emacs-lisp
   (let ((exchange-setup-vars '((smtpmail-smtp-server  . "localhost")
@@ -1247,6 +1225,28 @@ We send all messages by SMTP.
        :drafts-folder exchange-drafts-folder
        :refile-folder exchange-refile-folder
        :vars exchange-setup-vars))
+#+end_src
+
+*** Gmail
+#+begin_src emacs-lisp
+  (let ((gmail-setup-vars '((smtpmail-smtp-server   . "smtp.gmail.com")
+                            (smtpmail-stream-type   . starttls)
+                            (smtpmail-smtp-service  .  587)
+                            (mu4e-maildir-shortcuts . (("/Gmail/INBOX" . ?i)
+                                                       ("/Gmail/[Gmail].Sent Mail"   . ?s)
+                                                       ("/Gmail/[Gmail].Trash"       . ?t)))))
+        (gmail-prefix "[Gmail].")
+        (gmail-sent-folder "Sent Mail")
+        (gmail-trash-folder "Trash")
+        (gmail-drafts-folder "Drafts"))
+
+      (make-mu4e-context-account
+       :name "Gmail"
+       :user-mail-address npg/gmail-address
+       :sent-folder (concat gmail-prefix gmail-sent-folder)
+       :trash-folder (concat gmail-prefix gmail-trash-folder)
+       :drafts-folder (concat gmail-prefix gmail-drafts-folder)
+       :vars gmail-setup-vars))
 #+end_src
 
 ** Headers
