@@ -336,7 +336,22 @@ When splitting a window, I always want focus in the new window.
   (global-set-key (kbd "C-x 3") 'npg/split-window-right-and-switch)
 #+END_SRC
 
-* Completion
+* Interfaces
+** =evil=
+Use =evil=.
+#+BEGIN_SRC emacs-lisp
+  (use-package evil
+    :config
+    (evil-mode 1))
+#+END_SRC
+
+Enable =surround= everywhere.
+#+BEGIN_SRC emacs-lisp
+  (use-package evil-surround
+    :config
+    (global-evil-surround-mode 1))
+#+END_SRC
+
 ** Ivy
 I will try out Ivy for now, but I'm not against moving to Helm. We use
 =counsel-M-x= for command completion, replace =isearch= with =swiper=, and use
@@ -372,6 +387,15 @@ useful. Let's try it out.
 #+end_src
 
 * Project Management
+** =dumb-jump=
+And to think of the untold hours I spent configuring C\C++ tags when I could have used this!
+#+begin_src emacs-lisp
+  (use-package dumb-jump
+    :config
+    (define-key evil-normal-state-map (kbd "M-.") 'dumb-jump-go)
+    (setq dumb-jump-selector 'ivy))
+#+end_src
+
 ** =ag=
 Try out the Silver Searcher.
 #+begin_src emacs-lisp
@@ -379,15 +403,38 @@ Try out the Silver Searcher.
 #+end_src
 
 ** =magit=
-Nothing special to see here.
-#+begin_src emacs-lisp
+I use =magit= to handle version control. It's lovely, but I tweak a few things:
+
+- I bring up the status menu with =C-x g=.
+- Use =evil= keybindings with =magit=.
+- The default behavior of =magit= is to ask before pushing. I haven't had any
+  problems with accidentally pushing, so I'd rather not confirm that every time.
+- Per [[http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html][tpope's suggestions]], highlight commit text in the summary line that goes
+  beyond 50 characters.
+- On the command line I'll generally push a new branch with a plain old =git
+  push=, which automatically creates a tracking branch on (usually) =origin=.
+  Magit, by default, wants me to manually specify an upstream branch. This binds
+  =P P= to =magit-push-implicitly=, which is just a wrapper around =git push
+  -v=. Convenient!
+- I'd like to start in the insert state when writing a commit message.
+#+BEGIN_SRC emacs-lisp
   (use-package magit
     :bind
     ("C-x g" . magit-status)
 
     :config
-    (setq magit-completing-read-function 'magit-ido-completing-read))
-#+end_src
+    (use-package evil-magit)
+    (use-package with-editor)
+    (setq magit-push-always-verify nil)
+    (setq git-commit-summary-max-length 50)
+
+    (with-eval-after-load 'magit-remote
+      (magit-define-popup-action 'magit-push-popup ?P
+        'magit-push-implicitly--desc
+        'magit-push-implicitly ?p t))
+
+    (add-hook 'with-editor-mode-hook 'evil-insert-state))
+#+END_SRC
 
 ** =projectile=
 Search for files within a project with =projectile-ag= through =C-c v=. Also
@@ -410,15 +457,6 @@ Perhaps Sr. Speedbar is better, but let's try this for now.
 #+begin_src emacs-lisp
   (use-package project-explorer
     :bind ("C-x p" . project-explorer-open))
-#+end_src
-
-** =dumb-jump=
-And to think of the untold hours I spent configuring C\C++ tags when I could have used this!
-#+begin_src emacs-lisp
-  (use-package dumb-jump
-    :config
-    (global-set-key (kbd "M-.") 'dumb-jump-go)
-    (setq dumb-jump-selector 'ivy))
 #+end_src
 
 * Development Environments
@@ -1215,6 +1253,18 @@ show this warning instead."
 #+end_src
 
 *** Navigation
+Use =evil= with Org agendas.
+#+BEGIN_SRC emacs-lisp
+  (use-package evil-org
+    :after org
+    :config
+    (add-hook 'org-mode-hook 'evil-org-mode)
+    (add-hook 'evil-org-mode-hook
+              (lambda () (evil-org-set-key-theme)))
+    (require 'evil-org-agenda)
+    (evil-org-agenda-set-keys))
+#+END_SRC
+
 **** Helpers
 Jump sections by searching for the chosen section delimiter.
 #+begin_src emacs-lisp
