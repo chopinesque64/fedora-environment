@@ -987,8 +987,28 @@ Define a few common tasks as capture templates. Specifically, I frequently:
 
 #+begin_src emacs-lisp
   (setq org-capture-templates
-        (quote (("t" "todo" entry (file org-capture-file)
-                 "* TODO %?\n%U\n%a\n" :clock-in t :clock-resume t))))
+        ;; todo
+        '(("t" "todo" entry (file org-capture-file)
+           "* TODO %?\n%U\n%a\n" :clock-in t :clock-resume t)
+
+          ;; email answer (auto)
+          ("a" "answer" entry (file org-capture-file)
+           "* NEXT Answer %:from on %:subject\nSCHEDULED: %t\n%U\n%a\n"
+           :clock-in t :clock-resume t :immediate-finish t)
+
+          ;; web bookmark
+          ("b" "webmark" entry (file+headline org-jot-file "Webmarks")
+           "* %?\n:PROPERTIES:\n:CREATED: %U\n :END:\n\n" :empty-lines 1)
+
+          ;; meeting
+          ("m" "meeting" entry (file org-capture-file)
+           "* MEETING: %? :MEETING:\n%U" :clock-in t :clock-resume t)
+
+          ;; journal entry
+          ("j" "Journal" entry (file+datetree org-journal-file)
+           "* %?\n%U\n" :clock-in t :clock-resume t)))
+#+end_src
+
 Define some custom actions to take on completion or termination of a capture.
 Right now, this just automatically marks for refile any message on which we
 successfully complete a capture.
