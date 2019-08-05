@@ -810,26 +810,18 @@ Let's bind =org-capture= to something sensible.
 Define a few common tasks as capture templates.
 #+begin_src emacs-lisp
   (setq org-capture-templates
-    ;; todo
-    (("t" "todo" entry (file+headline org-index-file "INBOX")
+    '(("t" "Todo" entry (file+headline org-index-file "INBOX")
       "* TODO %?\n%U\n%a\n" :clock-in t :clock-resume t)
-
-    ;; email answer (auto)
-    ("e" "email" entry (file+headline org-index-file "INBOX")
-      "* NEXT Answer %:from on %:subject\nSCHEDULED: %t\n%U\n%a\n"
-      :clock-in t :clock-resume t :immediate-finish t)
-
-    ;; web bookmark
-    ("b" "webmark" entry (file+headline org-jot-file "Webmarks")
-     "* %?\n:PROPERTIES:\n:CREATED: %U\n :END:\n\n" :empty-lines 1)
-
-    ;; meeting
-    ("m" "meeting" entry (file+headline org-index-file "INBOX")
-     "* MEETING: %? :MEETING:\n%U" :clock-in t :clock-resume t)
-
-    ;; journal entry
+    ("n" "Next" entry (file+headline org-index-file "INBOX")
+      "* NEXT %?\nDEADLINE: %t\n%U\n%a\n" :clock-in t :clock-resume t :immediate-finish t)
+    ("m" "Meeting" entry (file+headline org-jot-file)
+     "* MEETING: %? :MEETING:\n%U\n" :clock-in t :clock-resume t)
+    ("d" "Diversion" entry (file+datetree org-journal-file)
+     "* DIVERSION: %? :DIVERSION:\n%U\n" :clock-in t :clock-resume t)
     ("j" "Journal" entry (file+datetree org-journal-file)
-     "* %?\n%U\n" :clock-in t :clock-resume t)))
+     "* %? \n%U\n" :clock-in t :clock-resume t)
+    ("j" "Jot" entry (file+headline org-jot-file)
+     "* %? :JOT: \n%U\n" :clock-in t :clock-resume t)))
 #+end_src
 
 Define some custom actions to take on completion or termination of a capture.
