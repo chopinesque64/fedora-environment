@@ -1,4 +1,4 @@
-#+TITLE: Emacs Configuration
++TITLE: Emacs Configuration
 #+AUTHOR: Nathanael Gentry
 #+EMAIL: ngentry1@liberty.edu
 #+OPTIONS: toc:nil num:nil
@@ -12,27 +12,28 @@ My =init.el= sets up MELPA in the package manager and installs =use-package.el= 
   (setq use-package-always-ensure t)
 #+end_src
 
-** Environment
-Tell emacs where our linux configuration document lives.
+** Linux Environment
+Tell Emacs where our Linux configuration document lives.
 #+begin_src emacs-lisp
   (setq linux-configuration-directory "~/projects/fedora-environment/")
 #+end_src
 
-** Private Config
+** Other Configs
 Load the private configuration, setting variables and such.
 #+begin_src emacs-lisp
   (load (concat user-emacs-directory "npg-private.el"))
   (require 'npg-private)
 #+end_src
 
-** Temp File
-Add a temporary customization file.
+Load a description of development directories to include on the path.
 #+begin_src emacs-lisp
-  (setq custom-file (make-temp-file "emacs-custom"))
+  (load (concat user-emacs-directory "npg-devel.el"))
+  (require 'npg-devel)
 #+end_src
 
-* Sensible Defaults
-Use HRS's [[https://github.com/hrs/sensible-defaults.el/][sensible-defaults.el]] for common-sense settings.
+** Sensible Defaults
+Use HRS's [[https://github.com/hrs/sensible-defaults.el/][sensible-defaults.el]] for common-sense settings -- such things as
+inhibiting the startup screen and clearing the scratch buffer.
 #+begin_src emacs-lisp
   (require 'url)
   (setq-local sensible-defaults-loc (concat user-emacs-directory "defaults.el"))
@@ -44,16 +45,9 @@ Use HRS's [[https://github.com/hrs/sensible-defaults.el/][sensible-defaults.el]]
   (sensible-defaults/use-all-keybindings)
 #+end_src
 
-Perhaps backups would be good to have, but let's not have them clutter our current directory. And let's not do autosave or lockfiles, either. I save frequently enough.
-#+begin_src emacs-lisp
-  (setq backup-directory-alist '(("" . "~/.emacs.d/backup")))
-  (setq auto-save-default nil
-        create-lockfiles nil)
-#+end_src
-
-** Sensible Functions
-Define some sensible utility functions.
-
+* Utility Functions
+** Bric-a-Brac
+The doctsrings for these little guys do all the talking.
 #+begin_src emacs-lisp
   (defun npg/append-to-path (path)
     "Append a path to $PATH and exec-path"
@@ -62,24 +56,24 @@ Define some sensible utility functions.
 #+end_src
 
 #+begin_src emacs-lisp
-  (defun npg/kill-current-buffer ()
-    "Kill the current buffer without prompting."
-    (interactive)
-    (kill-buffer (current-buffer)))
-#+end_src
-
-#+begin_src emacs-lisp
   (defun npg/disable-line-numbers ()
     "Shortcut function to disable line numbers."
     (setq display-line-numbers-mode -1))
 #+end_src
 
-* Custom Functions
+#+begin_src emacs-lisp
+  (defun npg/buffer-mode (&optional buffer-or-name)
+    "Returns the major mode associated with a buffer.
+  If buffer-or-name is nil return current buffer's mode."
+    (buffer-local-value 'major-mode
+     (if buffer-or-name (get-buffer buffer-or-name) (current-buffer))))
+#+end_src
+
 ** Peek Frame
-Tuhdo has an excellent tutorial on setting up popup frames for =rtags=, and I've generalized his code and made the popup undecorated but still resizable.
+Tuhdo has an [[https://tuhdo.github.io/emacs-frame-peek.html][excellent tutorial]] on setting up popup frames for =rtags=, and I've generalized his code and made the popup undecorated but still resizable.
 
 #+begin_src emacs-lisp
-  (defun npg/make-peek-frame (in-frame-function &rest args)
+  (defun tdh/make-peek-frame (in-frame-function &rest args)
     "Make a new frame for peeking definition"
     (let (summary
           doc-frame
@@ -114,17 +108,33 @@ Tuhdo has an excellent tutorial on setting up popup frames for =rtags=, and I've
       ;; 5. Make frame visible again
       (make-frame-visible doc-frame)))
 #+end_src
-** Buffer Mode
+
+** Transparency
+Frame transparency does not seem to play nicely with Cinnamon, but here's a function to manipulate it.
 #+begin_src emacs-lisp
-  (defun npg/buffer-mode (&optional buffer-or-name)
-    "Returns the major mode associated with a buffer.
-  If buffer-or-name is nil return current buffer's mode."
-    (buffer-local-value 'major-mode
-     (if buffer-or-name (get-buffer buffer-or-name) (current-buffer))))
+  (defun hrs/opacity (value)
+    "Sets the percent opacity of the frame window."
+    (interactive "nOpacity Value (0 - 100):")
+    (set-frame-parameter (selected-frame) 'alpha value))
 #+end_src
 
-* Appearance
-** Window
+* System
+** Internal Files
+Add a temporary customization file so any variable customizations we make won't clutter =init.el=.
+#+begin_src emacs-lisp
+  (setq custom-file (make-temp-file "emacs-custom"))
+#+end_src
+
+Perhaps backups would be good to have, but let's not have them clutter our
+current directory. Please, no autosave or lockfiles either. I save frequently
+enough and don't regularly work in shared directories.
+#+begin_src emacs-lisp
+  (setq backup-directory-alist '(("" . "~/.emacs.d/backup")))
+  (setq auto-save-default nil
+        create-lockfiles nil)
+#+end_src
+** Appearance
+*** Window
 Reclaim real estate, especially on my old X220T, by disabling window chrome.
 #+begin_src emacs-lisp
   (tool-bar-mode 0)
@@ -132,18 +142,18 @@ Reclaim real estate, especially on my old X220T, by disabling window chrome.
   (scroll-bar-mode -1)
 #+end_src
 
-Tooltips generally aren't helpful. Let's just display the information in the
+Tooltips generally are a nuisance. Let's just display the information in the
 minibuffer area instead.
 #+begin_src emacs-lisp
   (tooltip-mode -1)
 #+end_src
 
-Start Emacs maximized.
+Start Emacs maximized. I live in it, after all.
 #+begin_src emacs-lisp
   (toggle-frame-maximized)
 #+end_src
 
-** Theme
+*** Theme
 I love the unobtrusive elegance of [[https://github.com/arcticicestudio/nord-emacs][nord-emacs]], although sometimes the colors can be a little /too/ subtle.
 #+begin_src emacs-lisp
   (use-package nord-theme
@@ -152,15 +162,7 @@ I love the unobtrusive elegance of [[https://github.com/arcticicestudio/nord-ema
     (load-theme 'nord t))
 #+end_src
 
-Frame transparency does not seem to play nicely with Cinnamon, but here's a function to manipulate it.
-#+begin_src emacs-lisp
-  (defun opacity (value)
-    "Sets the percent opacity of the frame window."
-    (interactive "nOpacity Value (0 - 100):")
-    (set-frame-parameter (selected-frame) 'alpha value))
-#+end_src
-
-** Modeline
+*** Modeline
 I want a pristine modeline, uncluttered by modetexts. Note that the window title gives =projectile= info.
 #+begin_src emacs-lisp
   (use-package minions
@@ -179,24 +181,55 @@ load information.
   (display-time-mode)
 #+end_src
 
-** Default Windows
+*** Default Windows
 Split into two windows on startup.
 #+begin_src emacs-lisp
   (split-window-right)
 #+end_src
 
-* Global Editor
-Note that =sensible-defaults.el= already inhibits the startup screen and blanks the scratch buffer.
+** Buffers
+Always kill the current buffer with =C-x k=.
+#+begin_src emacs-lisp
+  (defun npg/kill-current-buffer ()
+    "Kill the current buffer.."
+    (interactive)
+    (kill-buffer (current-buffer)))
 
-** Tabs & Indentation
+  (global-set-key (kbd "C-x k") 'npg/kill-current-buffer)
+#+end_src
+
+** Windows
+When splitting a window, I always want focus in the new window.
+#+BEGIN_SRC emacs-lisp
+  (defun npg/split-window-below-and-switch ()
+    "Split the window horizontally, then switch to the new pane."
+    (interactive)
+    (split-window-below)
+    (balance-windows)
+    (other-window 1))
+
+  (defun npg/split-window-right-and-switch ()
+    "Split the window vertically, then switch to the new pane."
+    (interactive)
+    (split-window-right)
+    (balance-windows)
+    (other-window 1))
+
+  (global-set-key (kbd "C-x 2") 'npg/split-window-below-and-switch)
+  (global-set-key (kbd "C-x 3") 'npg/split-window-right-and-switch)
+#+END_SRC
+
+** Lines and Spaces
 Let's make our shallow tabs into spaces.
 #+begin_src emacs-lisp
   (setq-default tab-width 2)
   (setq-default indent-tabs-mode nil)
 #+end_src
 
-** Lines
-I used to display line numbers globally, but that got to be too much of a pain when I had to picemeal disable numbers for =mu4e=, the agenda, the terminal, and special modes. Now, we just enable line numbers for major programming languages -- those that derive from =prog-mode= -- and all files we open through =find-file=.
+I used to display line numbers globally, but that got to be too much of a pain
+when I had to picemeal disable numbers for =mu4e=, the agenda, the terminal,
+and special modes. Now, we just enable line numbers for major programming
+languages -- those that derive from =prog-mode= -- and all files we open through =find-file=.
 #+begin_src emacs-lisp
   (dolist (lines-mode
            '(prog-mode-hook
@@ -209,11 +242,72 @@ Also show column numbers in the modeline.
   (setq column-number-mode t)
 #+end_src
 
-Who needs to split lines at 80 characters?
+Even though I have hard breaks set in text modes through =auto-fill-mode=,
 #+begin_src emacs-lisp
   (global-visual-line-mode)
 #+end_src
 
+* Navigation
+** =which-key=
+#+begin_src emacs-lisp
+  (use-package which-key
+    :init
+    (which-key-mode)
+    (setq which-key-idle-delay 0.2)
+    :diminish which-key-mode
+  )
+#+end_src
+
+** =evil=
+Use =evil=. I tried to resist it as long as I could, but I have been converted.
+#+BEGIN_SRC emacs-lisp
+  (use-package evil
+    :config
+    (evil-mode 1))
+#+END_SRC
+
+Use a powerful keybinding engine for even more complete =vim= emulation. Thanks
+to [[https://github.com/gjstein/emacs.d][Gregory Stein]] for illuminating me. You'll see that I leapfrog no small amount
+from his configuration.
+#+begin_src emacs-lisp
+  (use-package general
+    :after evil
+    :init
+    (defvar npg-leader-key "<SPC>"))
+#+end_src
+
+* Global Keys
+I use several functions very requently, and I would like them to be easily
+accessible from anywhere:
+ - Punching in\out for continuous clocking;
+ - Accessing both a daily and weekly agenda;
+ - Viewing =git= status;
+ - Quickly capturing some text;
+ - Opening my literate configs.
+#+begin_src emacs-lisp
+  (defun npg/visit-emacs-config ()
+    (interactive)
+    (find-file (concat user-emacs-directory "configuration.org")))
+
+  (defun npg/visit-linux-config ()
+    (interactive)
+    (find-file (concat linux-configuration-directory "fedora-environment.org")))
+
+  (general-evil-setup)
+  (general-define-key
+   :prefix npg-leader-key
+   :states '(normal motion)
+    "I" '(bh/punch-in :which-key "punch in")
+    "O" '(bh/punch-out :which-key "punch-out")
+    "a" '(npg/org-agenda :which-key "daily agenda")
+    "A" '(npg/org-weekly-agenda :which-key "weekly agenda")
+    "g" '(magit-status :which-key "magit")
+    "q" '(org-capture :which-key "capture")
+    "ee" '(npg/visit-emacs-config :which-key "emacs config")
+    "ef" '(npg/visit/linux/config :which-key "linux config"))
+#+end_src
+
+* Services
 ** =smartparens=
 So powerful.
 #+begin_src emacs-lisp
@@ -293,100 +387,7 @@ We'll add local mode hooks for flycheck.
   (use-package flycheck)
 #+end_src
 
-** Keybindings
-Quickly open my Emacs and Fedora configuration org documents.
-#+begin_src emacs-lisp
-  (defun npg/visit-emacs-config ()
-    (interactive)
-    (find-file (concat user-emacs-directory "configuration.org")))
-
-  (global-set-key (kbd "C-c e e") 'npg/visit-emacs-config)
-#+end_src
-
-#+begin_src emacs-lisp
-  (defun npg/visit-linux-config ()
-    (interactive)
-    (find-file (concat linux-configuration-directory "fedora-environment.org")))
-
-    (global-set-key (kbd "C-c e f") 'npg/visit-linux-config)
-#+end_src
-
-Always kill the current buffer with keystroke.
-#+begin_src emacs-lisp
-  (global-set-key (kbd "C-x k") 'npg/kill-current-buffer)
-#+end_src
-
-When splitting a window, I always want focus in the new window.
-#+BEGIN_SRC emacs-lisp
-  (defun nps/split-window-below-and-switch ()
-    "Split the window horizontally, then switch to the new pane."
-    (interactive)
-    (split-window-below)
-    (balance-windows)
-    (other-window 1))
-
-  (defun npg/split-window-right-and-switch ()
-    "Split the window vertically, then switch to the new pane."
-    (interactive)
-    (split-window-right)
-    (balance-windows)
-    (other-window 1))
-
-  (global-set-key (kbd "C-x 2") 'npg/split-window-below-and-switch)
-  (global-set-key (kbd "C-x 3") 'npg/split-window-right-and-switch)
-#+END_SRC
-
-* Interfaces
-** =evil=
-Use =evil=.
-#+BEGIN_SRC emacs-lisp
-  (use-package evil
-    :config
-    (evil-mode 1))
-#+END_SRC
-
-Enable =surround= everywhere.
-#+BEGIN_SRC emacs-lisp
-  (use-package evil-surround
-    :config
-    (global-evil-surround-mode 1))
-#+END_SRC
-
-** Ivy
-I will try out Ivy for now, but I'm not against moving to Helm. We use
-=counsel-M-x= for command completion, replace =isearch= with =swiper=, and use
-fuzzy matching everywhere except swiper. (Only exact matches make sense there.)
-
-I prefer the =ido= way of doing things for finding files, so I don't use =counsel-find-file=.
-
-#+begin_src emacs-lisp
-  (use-package counsel
-    :bind
-    ("M-x" . 'counsel-M-x)
-    ("C-s" . 'swiper)
-
-    :init
-    (ivy-mode 1)
-    (use-package flx)
-
-    (setq ivy-use-virtual-buffers t
-          ivy-count-format "(%d/%d)"
-          ivy-initial-inputs-alist nil
-          ivy-re-builders-alist
-            '((swiper . ivy--regex-plus)
-              (t . ivy--regex-fuzzy))))
-#+end_src
-
-** Avy
-Since I'm trying to stay away from =evil= for now, Avy sounds like it might be
-useful. Let's try it out.
-#+begin_src emacs-lisp
-  (use-package avy
-    :ensure t
-    :bind (("M-s" . avy-goto-word-1)))
-#+end_src
-
-* Project Management
+* Projects
 ** =dumb-jump=
 And to think of the untold hours I spent configuring C\C++ tags when I could have used this!
 #+begin_src emacs-lisp
@@ -456,7 +457,89 @@ fuzzy-searching for files anywhere.
           projectile-require-project-root nil))
    #+end_src
 
-* Development Environments
+* Environments
+** Terminal
+Use =multi-term= for login shell sessions. (If we only really want to have one
+terminal open at a time, should we really be using =multi-term=?)
+#+begin_src emacs-lisp
+  (use-package multi-term
+    :init
+    (global-set-key (kbd "C-c t") 'multi-term)
+    (setq multi-term-program-switches "--login"))
+#+end_src
+
+Let's not use =evil= in the terminal. It's distracting, and it rebinds some useful
+keys, like =C-d=.
+#+begin_src emacs-lisp
+  (evil-set-initial-state 'term-mode 'emacs)
+#+end_src
+
+** Prose
+*** =flyspell=
+Let's enable spell-checking for text (org, markdown) and commit messages.
+#+begin_src emacs-lisp
+    (use-package flyspell
+      :config
+      (add-hook 'text-mode-hook 'turn-on-auto-fill)
+      (add-hook 'gfm-mode-hook 'flyspell-mode)
+      (add-hook 'org-mode-hook 'flyspell-mode)
+      (add-hook 'git-commit-mode-hook 'flyspell-mode))
+#+end_src
+
+*** Dictionary: Webster 1913
+I look up definitions by hitting =C-x w=, which shells out to =sdcv=. I've
+loaded that with the (beautifully lyrical) 1913 edition of Webster's dictionary,
+so these definitions are a lot of fun.
+#+begin_src emacs-lisp
+    (defun hrs/dictionary-prompt ()
+      (read-string
+       (format "Word (%s): " (or (hrs/region-or-word) ""))
+       nil
+       nil
+       (hrs/region-or-word)))
+
+    (defun hrs/dictionary-define-word ()
+      (interactive)
+      (let* ((word (hrs/dictionary-prompt))
+             (buffer-name (concat "Definition: " word)))
+        (with-output-to-temp-buffer buffer-name
+          (shell-command (format "sdcv -n %s" word) buffer-name))))
+
+    (define-key global-map (kbd "C-x w") 'hrs/dictionary-define-word)
+#+end_src
+
+*** Thesaurus: WordNet
+Synosaurus is hooked up to wordnet to provide access to a thesaurus. Hitting
+=C-x s= searches for synonyms.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package synosaurus)
+  (setq-default synosaurus-backend 'synosaurus-backend-wordnet)
+  (add-hook 'after-init-hook #'synosaurus-mode)
+  (define-key global-map "\C-xs" 'synosaurus-lookup)
+#+END_SRC
+
+*** Word Count
+This little [[https://www.emacswiki.org/emacs/wcMode][minor mode]] sets =mode-line-position= to display character count,
+word count, and line count.
+#+begin_src emacs-lisp
+      (setq mode-line-position
+        (append
+         mode-line-position
+         '((wc-mode
+      (6 (:eval (if (use-region-p)
+        (format " %d,%d,%d"
+          (abs (- (point) (mark)))
+          (count-words-region (point) (mark))
+          (abs (- (line-number-at-pos (point))
+            (line-number-at-pos (mark)))))
+            (format " %d,%d,%d"
+              (- (point-max) (point-min))
+              (count-words-region (point-min) (point-max))
+              (line-number-at-pos (point-max))))))
+      nil))))
+#+end_src
+
 ** Python
 Set up our =virtualenv= for =jedi=.
 #+begin_src emacs-lisp
@@ -542,133 +625,80 @@ Note, however, that Org also uses these settings to show PDF previews.
   (use-package json-mode)
 #+end_src
 
-** Prose
-*** =flyspell=
-Let's enable spell-checking for text (org, markdown) and commit messages.
-#+begin_src emacs-lisp
-    (use-package flyspell
-      :config
-      (add-hook 'text-mode-hook 'turn-on-auto-fill)
-      (add-hook 'gfm-mode-hook 'flyspell-mode)
-      (add-hook 'org-mode-hook 'flyspell-mode)
-      (add-hook 'git-commit-mode-hook 'flyspell-mode))
-#+end_src
-
-*** Dictionary: Webster 1913
-I look up definitions by hitting =C-x w=, which shells out to =sdcv=. I've
-loaded that with the (beautifully lyrical) 1913 edition of Webster's dictionary,
-so these definitions are a lot of fun.
-#+begin_src emacs-lisp
-    (defun hrs/dictionary-prompt ()
-      (read-string
-       (format "Word (%s): " (or (hrs/region-or-word) ""))
-       nil
-       nil
-       (hrs/region-or-word)))
-
-    (defun hrs/dictionary-define-word ()
-      (interactive)
-      (let* ((word (hrs/dictionary-prompt))
-             (buffer-name (concat "Definition: " word)))
-        (with-output-to-temp-buffer buffer-name
-          (shell-command (format "sdcv -n %s" word) buffer-name))))
-
-    (define-key global-map (kbd "C-x w") 'hrs/dictionary-define-word)
-#+end_src
-
-*** Thesaurus: WordNet
-Synosaurus is hooked up to wordnet to provide access to a thesaurus. Hitting
-=C-x s= searches for synonyms.
-
-#+BEGIN_SRC emacs-lisp
-  (use-package synosaurus)
-  (setq-default synosaurus-backend 'synosaurus-backend-wordnet)
-  (add-hook 'after-init-hook #'synosaurus-mode)
-  (define-key global-map "\C-xs" 'synosaurus-lookup)
-#+END_SRC
-
-*** Word Count
-This little [[https://www.emacswiki.org/emacs/wcMode][minor mode]] sets =mode-line-position= to display character count,
-word count, and line count.
-#+begin_src emacs-lisp
-      (setq mode-line-position
-        (append
-         mode-line-position
-         '((wc-mode
-      (6 (:eval (if (use-region-p)
-        (format " %d,%d,%d"
-          (abs (- (point) (mark)))
-          (count-words-region (point) (mark))
-          (abs (- (line-number-at-pos (point))
-            (line-number-at-pos (mark)))))
-            (format " %d,%d,%d"
-              (- (point-max) (point-min))
-              (count-words-region (point-min) (point-max))
-              (line-number-at-pos (point-max))))))
-      nil))))
-#+end_src
-
-* Terminal
-Use =multi-term= for login shell sessions.
-#+begin_src emacs-lisp
-  (use-package multi-term
-    :init
-    (global-set-key (kbd "C-c t") 'multi-term)
-    (setq multi-term-program-switches "--login"))
-#+end_src
-
-Let's not use =evil= in the terminal.
-#+begin_src emacs-lisp
-  (evil-set-initial-state 'term-mode 'emacs)
-#+end_src
-
 * Org
-** Installation
- We have already installed the Org package archive, so let's ensure we're using that latest released version with contributions.
+** System
+ We have already installed the Org package archive, so let's ensure we're using
+ that latest released version with contributions. The included keybindings are
+ fallbacks in case the =evil= keymaps don't work properly.
  #+begin_src emacs-lisp
    (use-package org
-     :ensure org-plus-contrib)
+     :ensure org-plus-contrib
+     :init
+     (add-hook 'org-mode-hook 'visual-line-mode)
+     (add-hook 'org-mode-hook 'org-indent-mode)
+     (add-hook 'org-mode-hook 'flyspell-mode)
+     :bind (("\C-c a" . org-agenda)
+            ("\C-c c" . org-capture)
+            ("\C-c b" . org-iswitchb))
+     :config
+     (setq org-completion-use-ido t
+           org-ellipsis " ▼ "))
  #+end_src
 
-*** Editor
-Indent headings by default, and use =yasnippet=.
-#+begin_src emacs-lisp
-  (dolist (mode-hook
-                   '(org-indent-mode
-                     yas-minor-mode))
-            (add-hook 'org-mode-hook mode-hook))
-#+end_src
-
-Make sure we have LaTeX snippets available in Org mode.
-#+begin_src emacs-lisp
-  (yas-activate-extra-mode 'latex-mode)
-#+end_src
-
-Let's use =ido= in here.
-#+begin_src emacs-lisp
-  (setq org-completion-use-ido t)
-#+end_src
-
-*** Display
-Since =nord-theme= doesn't have good heading contrast, use bullet heading indicators.
+Since =nord-theme= doesn't have good heading contrast, use pretty bullet heading indicators.
 #+begin_src emacs-lisp
   (use-package org-bullets
     :init (add-hook 'org-mode-hook 'org-bullets-mode))
 #+end_src
 
-And change from the distracting default ellipsis.
+Indent headings by default, and use =yasnippet= with LaTeX snippets available.
 #+begin_src emacs-lisp
-  (setq org-ellipsis " ▼ ")
+  (dolist (mode-hook
+                   '(org-indent-mode
+                     yas-minor-mode))
+            (add-hook 'org-mode-hook mode-hook))
+  (yas-activate-extra-mode 'latex-mode)
 #+end_src
 
-** Keybindings
-Let's add these sensible keybindings.
+*** Paths
+Store my org files in =~/documents/org=.
 #+begin_src emacs-lisp
-  (global-set-key (kbd "C-c l") 'org-store-link)
-  (global-set-key (kbd "C-c a") 'org-agenda)
-  (global-set-key (kbd "C-c b") 'org-iswitchb)
+  (defun npg/org-file-path (filename)
+    "Return the absolute address of an org file, given its relative name."
+    (concat (file-name-as-directory org-directory) filename))
+
+  (setq org-directory "~/documents/org")
+
+  (setq org-index-file (npg/org-file-path "index.org")
+        org-jot-file (npg/org-file-path "jot.org")
+        org-journal-file (npg/org-file-path "journal.org")
+        org-archive-location (concat
+                              (npg/org-file-path "archive.org")
+                              "::* From %s"))
 #+end_src
 
+ Derive the agenda from =index.org=, the project index.
+#+begin_src emacs-lisp
+  (setq org-agenda-files (list org-index-file))
+#+end_src
+
+** Keys
+Not quite working yet; I need to understand why my leader key doesn't respond.
+#+begin_src emacs-lisp
+  (general-define-key
+   :prefix npg-leader-key
+   :keymaps 'org-mode-map
+   :states '(normal motion)
+   "i" '(org-clock-in :which-key "clock in")
+   "o" '(org-clock-out :which-key "clock out")
+   "t" '(org-todo :which-key "todo state")
+   "ct" '(org-todo :which-key "todo state")
+   "D" '(npg/mark-done-and-archive :which-key "done and archive")
+   "ce" '(org-export-dispatch :which-key "org export")
+   "cp" '(org-set-property :which-key "org set property"))
+#+end_src
+
+** Babel
 Open source block editor (=C-c '=) in a split window; make formats and tabs native.
 #+begin_src emacs-lisp
   (setq org-src-fontify-natively t
@@ -676,7 +706,6 @@ Open source block editor (=C-c '=) in a split window; make formats and tabs nati
         org-src-window-setup 'split-window-below)
 #+end_src
 
-** Export
 *** Oxen
 Allow export to markdown and beamer (for presentations).
 #+BEGIN_SRC emacs-lisp
@@ -730,48 +759,29 @@ I'd like to always use Firefox, so:
   (setq proess-connection-type nil)
 #+END_SRC
 
-** Paths
-Store my org files in =~/documents/org=.
-#+begin_src emacs-lisp
-  (setq org-directory "~/documents/org")
-
-  (defun npg/org-file-path (filename)
-    "Return the absolute address of an org file, given its relative name."
-    (concat (file-name-as-directory org-directory) filename))
-
-  (setq org-index-file (npg/org-file-path "index.org")
-        org-jot-file (npg/org-file-path "jot.org")
-        org-journal-file (npg/org-file-path "journal.org")
-        org-archive-location (concat
-                              (npg/org-file-path "archive.org") "::* From %s"))
-#+end_src
-
- Derive the agenda from =index.org=, the project index.
-#+begin_src emacs-lisp
-  (setq org-agenda-files (list org-index-file))
-#+end_src
-
 ** Tasks
 *** States
-I am using these [[http://doc.norang.ca/org-mode.html][task states]], with some verbiage modification. A task should be
-in state =WAIT= when the task needs information from someone else; it should be
-set to =HOLD= when I don't have time to do it. Note that states =WAIT=,
-=HOLD=, and =DROP= request a note upon state shift.
+I am using these [[http://doc.norang.ca/org-mode.html][task states]], with some verbiage modification.
+A task should be in state =WAIT= when the task needs information from someone else; it should be
+set to =HOLD= when I don't have time to do it.
+
+Note that states =WAIT=, =HOLD=, and =DROP= request a note upon state shift.
 #+begin_src emacs-lisp
   (setq org-todo-keywords
-        (quote ((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d)")
-                (sequence "WAIT(w@/!)" "HOLD(h@/!)" "|" "DROP(c@/!)" "MEET"))))
+        '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d)")
+          (sequence "WAIT(w@/!)" "HOLD(h@/!)" "|" "DROP(c@/!)" "MEET")))
 #+end_src
 
+These colors work well with my dark-blue theme.
 #+begin_src emacs-lisp
   (setq org-todo-keyword-faces
         '(("TODO" :foreground "light salmon" :weight bold)
-        ("NEXT" :foreground "SteelBlue1" :weight bold)
-        ("DONE" :foreground "light green" :weight bold)
-        ("WAIT" :foreground "MediumOrchid1" :weight bold)
-        ("HOLD" :foreground "Orchid1" :weight bold)
-        ("DROP" :foreground "VioletRed1" :weight bold)
-        ("MEET" :foreground "light green" :weight bold)))
+          ("NEXT" :foreground "SteelBlue1" :weight bold)
+          ("DONE" :foreground "light green" :weight bold)
+          ("WAIT" :foreground "MediumOrchid1" :weight bold)
+          ("HOLD" :foreground "Orchid1" :weight bold)
+          ("DROP" :foreground "VioletRed1" :weight bold)
+          ("MEET" :foreground "light green" :weight bold)))
 
 #+end_src
 
@@ -786,34 +796,32 @@ Using =S-<arrow=, easily change task states without all the processing (e.g. set
 #+end_src
 
 *** Tags
-To aid agenda filtering, auto-update tags whenever the state changes.
+To aid agenda filtering, auto-update task tags whenever the state changes.
 #+begin_src emacs-lisp
    (setq org-todo-state-tags-triggers
         (quote (("DROP" ("DROP" . t))
                 ("WAIT" ("WAIT" . t))
                 ("HOLD" ("WAIT") ("HOLD" . t))
-                (done ("WAIT") ("HOLD"))
+                (done  ("WAIT") ("HOLD"))
                 ("TODO" ("WAIT") ("DROP") ("HOLD"))
                 ("NEXT" ("WAIT") ("DROP") ("HOLD"))
                 ("DONE" ("WAIT") ("DROP") ("HOLD")))))
 #+end_src
 
 *** Archive
-Hitting =C-c C-x C-d= will mark a todo as done and move it to an appropriate
-place in the archive. Note that this doesn't work in the agenda.
+Always record the time that a task was archived.
+#+BEGIN_SRC emacs-lisp
+  (setq org-log-done 'time)
+#+END_SRC
+
+Here's a shortcut to mark a task done and put it the archive. A leader-suffix
+=D= is defined for both the agenda and Org documents.
 #+BEGIN_SRC emacs-lisp
   (defun npg/mark-done-and-archive ()
-    "Mark the state of an org-mode item as DONE and archive it."
+    "Mark the state of a task item as DONE and archive it."
     (interactive)
     (org-todo 'done)
     (org-archive-subtree))
-
-  (define-key org-mode-map (kbd "C-c C-x C-d") 'npg/mark-done-and-archive)
-#+END_SRC
-
-Record the time that a task was archived.
-#+BEGIN_SRC emacs-lisp
-  (setq org-log-done 'time)
 #+END_SRC
 
 ** Tags
@@ -830,16 +838,16 @@ group. Note that some of the non-exclusive tags are applied by the task state ch
                           ("DROP" . ?d)
                           ("WAIT" . ?w)
                           ("HOLD" . ?h)
-                          ("PERS" . ?P)
-                          ("SYS" . ?S)
-                          ("LIBRTY" . ?l)
-                          ("RSCH" . ?r)
-                          ("MUSC" . ?m)))
+                          ("PERSONAL" . ?P)
+                          ("SYSTEM" . ?S)
+                          ("LIBERTY" . ?l)
+                          ("RESEARCH" . ?r)
+                          ("MUSIC" . ?m)))
 #+end_src
 
 Since we have defined single keys for tag application, let's use them.
 #+begin_src emacs-lisp
-  (setq org-fast-tag-selection-single-key (quote expert))
+  (setq org-fast-tag-selection-single-key 'expert)
 #+end_src
 
 ** Capture
@@ -1288,10 +1296,49 @@ Jump sections by searching for the chosen section delimiter.
   (goto-char (point-min))))
 #+end_src
 
+Agenda view commands for general keymap.
+#+begin_src emacs-lisp
+  (defun npg/org-agenda ()
+    (interactive)
+    (org-agenda 0 " "))
+
+  (defun npg/org-weekly-agenda ()
+    (interactive)
+    (org-agenda 0 "a"))
+#+end_src
+
 **** Keys
 Quickly view the agenda.
 #+begin_src emacs-lisp
   (global-set-key (kbd "<f12>") 'org-agenda)
+#+end_src
+
+Add an =evil= keymap for the agenda.
+#+begin_src emacs-lisp
+  (evil-set-initial-state 'org-agenda-mode 'normal)
+   (defvar org-agenda-mode-map)
+   (general-define-key
+    :keymaps 'org-agenda-mode-map
+    :states '(normal motion)
+    "l" 'org-agenda-later
+    "h" 'org-agenda-earlier
+    "j" 'org-agenda-next-line
+    "k" 'org-agenda-previous-line
+    (kbd "RET") 'org-agenda-switch-to
+    [escape] 'org-agenda-quit
+    "q" 'org-agenda-quit
+    "s" 'org-save-all-org-buffers
+    "t" 'org-agenda-todo
+    "T" 'org-agenda-set-tags
+    "g" 'org-agenda-redo
+    "v" 'org-agenda-view-mode-dispatch
+    "." 'org-agenda-goto-today
+    "J" 'gs/org-agenda-next-section
+    "K" 'gs/org-agenda-prev-section
+    "c" 'org-agenda-goto-calendar
+    "D" 'npg/mark-done-and-archive
+    "i" 'org-agenda-clock-in
+    "o" 'org-agenda-clock-out)
 #+end_src
 
 *** Defaults
@@ -1421,8 +1468,175 @@ Remove empty agenda blocks.
   (add-hook 'org-agenda-finalize-hook 'gs/remove-agenda-regions)
 #+end_src
 
+** Archive
+Note that if we archive, clocking data won't be around.
+** Clock
+I use continuous clocking, whereby a clock always runs somewhere when I am
+punched in. As I mark tasks done, the clock moves up the project tree until it
+hits a default task, defined in my project index:
+#+begin_src emacs-lisp
+  (defvar bh/organization-task-id "eb155a82-92b2-4f25-a3c6-0304591af2f9")
+#+end_src
+
+You can see a summary of clocking data in a column view. Let's set =org-column-view= (=C-c C-x C-c=) to emphasize timekeeping: [Task] [Effort]
+[ClockSummary].
+#+begin_src emacs-lisp
+  (setq org-columns-default-format "%32ITEM(Task) %10Effort(Effort){:} %10CLOCKSUM %16TIMESTAMP_IA")
+#+end_src
+
+*** Continuous Clocking
+#+begin_src emacs-lisp
+  (defun bh/clock-in-to-next (kw)
+    "Switch a task from TODO to NEXT when clocking in.
+  Skips capture tasks, projects, and subprojects.
+  Switch projects and subprojects from NEXT back to TODO"
+    (when (not (and (boundp 'org-capture-mode) org-capture-mode))
+      (cond
+       ((and (member (org-get-todo-state) (list "TODO"))
+             (bh/is-task-p))
+        "NEXT")
+       ((and (member (org-get-todo-state) (list "NEXT"))
+             (bh/is-project-p))
+        "TODO"))))
+
+  (defun bh/find-project-task ()
+    "Move point to the parent (project) task if any"
+    (save-restriction
+      (widen)
+      (let ((parent-task (save-excursion (org-back-to-heading 'invisible-ok) (point))))
+        (while (org-up-heading-safe)
+          (when (member (nth 2 (org-heading-components)) org-todo-keywords-1)
+            (setq parent-task (point))))
+        (goto-char parent-task)
+        parent-task)))
+
+  (defun bh/punch-in (arg)
+    "Start continuous clocking and set the default task to the
+  selected task.  If no task is selected set the Organization task
+  as the default task."
+    (interactive "p")
+    (setq bh/keep-clock-running t)
+    (if (equal major-mode 'org-agenda-mode)
+        ;;
+        ;; We're in the agenda
+        ;;
+        (let* ((marker (org-get-at-bol 'org-hd-marker))
+               (tags (org-with-point-at marker (org-get-tags-at))))
+          (if (and (eq arg 4) tags)
+              (org-agenda-clock-in '(16))
+            (bh/clock-in-organization-task-as-default)))
+      ;;
+      ;; We are not in the agenda
+      ;;
+      (save-restriction
+        (widen)
+        ; Find the tags on the current task
+        (if (and (equal major-mode 'org-mode) (not (org-before-first-heading-p)) (eq arg 4))
+            (org-clock-in '(16))
+          (bh/clock-in-organization-task-as-default)))))
+
+  (defun bh/punch-out ()
+    (interactive)
+    (setq bh/keep-clock-running nil)
+    (when (org-clock-is-active)
+      (org-clock-out))
+    (org-agenda-remove-restriction-lock))
+
+  (defun bh/clock-in-default-task ()
+    (save-excursion
+      (org-with-point-at org-clock-default-task
+        (org-clock-in))))
+
+  (defun bh/clock-in-parent-task ()
+    "Move point to the parent (project) task if any and clock in"
+    (let ((parent-task))
+      (save-excursion
+        (save-restriction
+          (widen)
+          (while (and (not parent-task) (org-up-heading-safe))
+            (when (member (nth 2 (org-heading-components)) org-todo-keywords-1)
+              (setq parent-task (point))))
+          (if parent-task
+              (org-with-point-at parent-task
+                (org-clock-in))
+            (when bh/keep-clock-running
+              (bh/clock-in-default-task)))))))
+
+
+
+  (defun bh/clock-in-organization-task-as-default ()
+    (interactive)
+    (org-with-point-at (org-id-find bh/organization-task-id 'marker)
+      (org-clock-in '(16))))
+
+  (defun bh/clock-out-maybe ()
+    "Clock into the parent task only when it makes sense to do so."
+    (when (and bh/keep-clock-running
+               (not org-clock-clocking-in)
+               (marker-buffer org-clock-default-task)
+               (not org-clock-resolving-clocks-due-to-idleness))
+      (bh/clock-in-parent-task)))
+#+end_src
+
+*** Records
+Let's keep clock records in a =LOGBOOK= drawer by default.
+#+begin_src emacs-lisp
+  (setq org-drawers (quote ("PROPERTIES" "LOGBOOK"))
+        org-clock-into-drawer t)
+#+end_src
+
+Since I change tasks often -- especially when I quickly capture something -- I
+don't want a bunch of zero-duration clock records in the logbooks.
+#+begin_src emacs-lisp
+  (setq org-clock-out-remove-zero-time-clocks t)
+#+end_src
+
+*** Effort
+To create an effort estimate for a task or subtree, start column mode with =C-c
+C-x C-c= and collapse the tree with =c=. With the point on the =Effort= column,
+set the estimated effort with the numeric keys, corresponding to the time values
+below.
+#+begin_src emacs-lisp
+  (setq org-global-properties (quote (("Effort_ALL" . "0:15 0:30 0:45 1:00 2:00 3:00 4:00 5:00 6:00 0:00")
+                                      ("STYLE_ALL" . "habit"))))
+#+end_src
+
+*** Persistence
+I want to be rather careful about my clocks, so I want to resume clocking under
+the following circumstances:
+ - when I restart emacs
+ - on clock-in if the clock is open (need to understand)
+
+Moreover, I do not want to be prompted to resume an active clock.
+#+begin_src emacs-lisp
+  (org-clock-persistence-insinuate)
+  (setq org-clock-in-resume t
+        org-clock-out-when-done t)
+
+  (setq org-clock-persist-query-resume nil)
+#+end_src
+
+*** Task Integration
+To integrate better with tasks:
+ - Mark tasks =NEXT= when clocking in
+ - Clock out when marking task =DONE=
+ - Include currently clocking tasks in clock reports
+ - Find open clocks with auto clock resolution.
+#+begin_src emacs-lisp
+  (setq org-clock-in-switch-to-state 'bh/clock-in-to-next
+        org-clock-out-when-done t
+        org-clock-report-include-clocking-task t)
+
+  (setq org-clock-auto-clock-resolution 'when-no-clock-is-running)
+#+end_src
+
+Hook =org-clock-out= so we move up the project tree appropriately.
+#+begin_src emacs-lisp
+  (add-hook 'org-clock-out-hook 'bh/clock-out-maybe 'append)
+#+end_src
+
 * Email
-** Installation
+** System
 I will connect =mu4e= to =offlineimap=, which I install in my environment documentation.
 #+begin_src emacs-lisp
   (add-to-list 'load-path "/usr/share/emacs/site-lisp/mu4e")
@@ -1439,10 +1653,17 @@ By officially registering =mu4e= here, we can start a message with =C-x m=.
   (setq mail-user-agent 'mu4e-user-agent)
 #+end_src
 
-Rather than installing an =offlineimap= timer in =systemctl=, let's have =mu4e= call one-off updates for us by its own timer. I haven't yet investigated the relative performance implications.
+Rather than installing an =offlineimap= timer in =systemctl=, let's have =mu4e=
+call one-off updates every five for us by its own timer. I haven't yet investigated the relative performance implications.
 #+begin_src emacs-lisp
     (setq mu4e-get-mail-command "offlineimap -o"
-          mu4e-update-interval 3600)
+          mu4e-update-interval 300)
+#+end_src
+
+Use =evil= bindings for navigation.
+#+begin_src emacs-lisp
+  (use-package evil-mu4e)
+  (require 'evil-mu4e)
 #+end_src
 
 Don't ask us about quitting =mu4e=.
@@ -1504,15 +1725,6 @@ We send all messages by SMTP.
 #+end_src
 
 ** Headers
-Open the Exchange inbox with =C-c m=.
-#+begin_src emacs-lisp
-    (defun npg/visit-inbox ()
-      (interactive)
-      (mu4e~headers-jump-to-maildir "/Exchange/INBOX"))
-
-    (global-set-key (kbd "C-c m") 'npg/visit-inbox)
-#+end_src
-
 Only move messages to the trash folder; do not mark them as deleted.
 In other words, do not add =+T= before =-N= so message is not marked IMAP-deleted. See [[https://github.com/djcb/mu/issues/1136][mu #1136]].
 #+begin_src emacs-lisp
@@ -1552,7 +1764,7 @@ Auto-fill mode, which automatically inserts hard linebreaks, is quite unhelpful 
                                  (visual-line-mode)))
 #+end_src
 
-When I'm composing a new email, default to using the first context.
+When I'm composing a new email, default to using the first context (Exchange).
 #+BEGIN_SRC emacs-lisp
   (setq mu4e-compose-context-policy 'pick-first)
 #+END_SRC
@@ -1583,11 +1795,6 @@ So replies quote correctly on other clients, change the reply header string to i
 #+end_src
 
 ** Reader
-Display the sender's email address along with their name.
-#+BEGIN_SRC emacs-lisp
-  (setq mu4e-view-show-addresses t)
-#+END_SRC
-
 While HTML emails are undeniably sinful, we often have to read them. That's
 sometimes best done in a browser. This effectively binds =a h= to open the
 current email in my default Web browser.
@@ -1621,7 +1828,8 @@ Thanks to Rob Stewart for the =mu4e-read-option= idea.
 #+end_src
 
 ** Notifications
-We use the =mu4e-alert= package to give modeline mail alerts.
+We use the =mu4e-alert= package to give modeline mail alerts, only for the
+folders that we care about.
 #+begin_src emacs-lisp
   (use-package mu4e-alert
     :after mu4e
@@ -1632,20 +1840,25 @@ We use the =mu4e-alert= package to give modeline mail alerts.
            "OR "
            "flag:unread maildir:/Gmail/INBOX"))
     (mu4e-alert-enable-mode-line-display)
+#+end_src
 
+Refresh the indicator every 360 seconds, or six minutes.
+#+begin_src emacs-lisp
     (defun npg/refresh-mu4e-alert-mode-line ()
       (interactive)
       (mu4e-alert-enable-mode-line-display))
 
-    (run-with-timer 0 3600 'npg/refresh-mu4e-alert-mode-line))
+    (run-with-timer 0 300 'npg/refresh-mu4e-alert-mode-line))
 #+end_src
 
 ** Org
-If we capture a todo while in =mu4e= header mode, store a link to the message itself, not the header query.
+If we capture a todo while in =mu4e= header mode, we should store a link
+to the message itself, not the header query.
 
-As noted at [[http://pragmaticemacs.com/emacs/master-your-inbox-with-mu4e-and-org-mode/][Pragmatic Emacs]], this allows creating a todo for messages that need action, and then archiving it since it no longer needs to stay in the inbox -- we have a direct link to it in the todo.
+As noted at [[http://pragmaticemacs.com/emacs/master-your-inbox-with-mu4e-and-org-mode/][Pragmatic Emacs]], this allows creating a todo for messages
+that need action, and then archiving it since it no longer needs to stay
+in the inbox -- we have a direct link to it in the todo.
 #+begin_src emacs-lisp
   (require 'org-mu4e)
   (setq org-mu4e-link-query-in-headers-mode nil)
 #+end_src
-
