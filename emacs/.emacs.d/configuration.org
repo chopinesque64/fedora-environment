@@ -441,23 +441,20 @@ Search for files within a project with =projectile-ag= through =C-c v=. Also
 bind =C-p= to fuzzy-searching within a project, and use the current directory as
 a project root when we don't have a defined project. This enables
 fuzzy-searching for files anywhere.
-   #+begin_src emacs-lisp
-     (use-package projectile
-       :bind
-       ("C-c v" . 'projectile-ag)
-       ("C-p" . 'projectile-find-file)
-
-       :config
-       (setq projectile-completion-system 'ivy
-             projectile-switch-project-action 'projectile-dired
-             projectile-require-project-root nil))
-   #+end_src
-
-Perhaps Sr. Speedbar is better, but let's try this for now.
 #+begin_src emacs-lisp
-  (use-package project-explorer
-    :bind ("C-x p" . project-explorer-open))
-#+end_src
+  (use-package projectile
+    :bind
+    ("C-c v" . 'projectile-ag)
+
+    :config
+    (define-key evil-normal-state-map (kbd "C-p") 'projectile-find-file)
+    (evil-define-key 'motion ag-mode-map (kbd "C-p") 'projectile-find-file)
+    (evil-define-key 'motion rspec-mode-map (kbd "C-p") 'projectile-find-file)
+
+    (setq projectile-completion-system 'ivy
+          projectile-switch-project-action 'projectile-dired
+          projectile-require-project-root nil))
+   #+end_src
 
 * Development Environments
 ** Python
@@ -618,6 +615,11 @@ Use =multi-term= for login shell sessions.
     :init
     (global-set-key (kbd "C-c t") 'multi-term)
     (setq multi-term-program-switches "--login"))
+#+end_src
+
+Let's not use =evil= in the terminal.
+#+begin_src emacs-lisp
+  (evil-set-initial-state 'term-mode 'emacs)
 #+end_src
 
 * Org
@@ -841,9 +843,10 @@ Since we have defined single keys for tag application, let's use them.
 #+end_src
 
 ** Capture
-Let's bind =org-capture= to something sensible.
+Let's bind =org-capture= to something sensible and open it in insert mode.
 #+begin_src emacs-lisp
   (global-set-key (kbd "C-c c") 'org-capture)
+  (add-hook 'org-capture-mode-hook 'evil-insert-state)
 #+end_src
 
 Define a few common tasks as capture templates.
