@@ -702,7 +702,8 @@ Store my org files in =~/documents/org=.
   (setq org-index-file (npg/org-file-path "index.org")
         org-jot-file (npg/org-file-path "jot.org")
         org-journal-file (npg/org-file-path "journal.org")
-        org-archive-location (concat (npg/org-file-path "archive.org") "::*%s"))
+        org-archive-location (concat
+                              (npg/org-file-path "archive.org") "::* From %s"))
 #+end_src
 
  Derive the agenda from =index.org=, the project index.
@@ -759,7 +760,7 @@ To aid agenda filtering, auto-update tags whenever the state changes.
 
 *** Archive
 Hitting =C-c C-x C-d= will mark a todo as done and move it to an appropriate
-place in the archive.
+place in the archive. Note that this doesn't work in the agenda.
 #+BEGIN_SRC emacs-lisp
   (defun npg/mark-done-and-archive ()
     "Mark the state of an org-mode item as DONE and archive it."
@@ -770,7 +771,7 @@ place in the archive.
   (define-key org-mode-map (kbd "C-c C-x C-d") 'npg/mark-done-and-archive)
 #+END_SRC
 
-Record the time that a todo was archived.
+Record the time that a task was archived.
 #+BEGIN_SRC emacs-lisp
   (setq org-log-done 'time)
 #+END_SRC
@@ -855,24 +856,6 @@ Allow =refile= to create parent nodes with confirmation.
 #+begin_src emacs-lisp
   (setq org-refile-allow-creating-parent-nodes 'confirm)
 #+end_src
-
-** Archive
-Hitting =C-c C-x C-s= will mark a todo as done and move it to an appropriate
-place in the archive.
-#+BEGIN_SRC emacs-lisp
-  (defun hrs/mark-done-and-archive ()
-    "Mark the state of an org-mode item as DONE and archive it."
-    (interactive)
-    (org-todo 'done)
-    (org-archive-subtree))
-
-  (define-key org-mode-map (kbd "C-c C-x C-s") 'hrs/mark-done-and-archive)
-#+END_SRC
-
-Record the time that a todo was archived.
-#+BEGIN_SRC emacs-lisp
-  (setq org-log-done 'time)
-#+END_SRC
 
 ** Agenda
 I have based this configuration on Gregory Stein's excellent [[https://github.com/gjstein/emacs.d/blob/e725a97a71c6236321f00c705085581f028c1580/config/gs-org.el][agenda configuration]], which it itself based
