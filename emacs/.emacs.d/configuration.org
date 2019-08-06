@@ -699,7 +699,6 @@ Not quite working yet; I need to understand why my leader key doesn't respond.
    "o" '(org-clock-out :which-key "clock out")
    "t" '(org-todo :which-key "todo state")
    "ct" '(org-todo :which-key "todo state")
-   "D" '(npg/mark-done-and-archive :which-key "done and archive")
    "ce" '(org-export-dispatch :which-key "org export")
    "cp" '(org-set-property :which-key "org set property"))
 #+end_src
@@ -1342,7 +1341,6 @@ Add an =evil= keymap for the agenda.
     "J" 'gs/org-agenda-next-section
     "K" 'gs/org-agenda-prev-section
     "c" 'org-agenda-goto-calendar
-    "D" 'npg/mark-done-and-archive
     "i" 'org-agenda-clock-in
     "o" 'org-agenda-clock-out)
 #+end_src
@@ -1475,7 +1473,6 @@ Remove empty agenda blocks.
 #+end_src
 
 ** Archive
-Note that if we archive, clocking data won't be around.
 ** Clock
 I use continuous clocking, whereby a clock always runs somewhere when I am
 punched in. As I mark tasks done, the clock moves up the project tree until it
