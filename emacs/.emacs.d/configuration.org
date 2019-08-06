@@ -266,6 +266,7 @@ Use =evil=. I tried to resist it as long as I could, but I have been converted.
     (evil-mode 1))
 #+END_SRC
 
+* Global Keys
 Use a powerful keybinding engine for even more complete =vim= emulation. Thanks
 to [[https://github.com/gjstein/emacs.d][Gregory Stein]] for illuminating me. You'll see that I leapfrog no small amount
 from his configuration.
@@ -276,7 +277,11 @@ from his configuration.
     (defvar npg-leader-key "<SPC>"))
 #+end_src
 
-* Global Keys
+Let's use the ThinkPad's paging keys to easily switch windows.
+#+begin_src emacs-lisp
+  (global-set-key (kbd "<prior>") 'other-window)
+#+end_src
+
 I use several functions very requently, and I would like them to be easily
 accessible from anywhere:
  - Punching in\out for continuous clocking;
@@ -296,7 +301,8 @@ accessible from anywhere:
   (general-evil-setup)
   (general-define-key
    :prefix npg-leader-key
-   :states '(normal motion)
+   :states '(normal)
+    "" nil
     "I" '(bh/punch-in :which-key "punch in")
     "O" '(bh/punch-out :which-key "punch-out")
     "a" '(npg/org-agenda :which-key "daily agenda")
@@ -304,7 +310,7 @@ accessible from anywhere:
     "g" '(magit-status :which-key "magit")
     "q" '(org-capture :which-key "capture")
     "ee" '(npg/visit-emacs-config :which-key "emacs config")
-    "ef" '(npg/visit/linux/config :which-key "linux config"))
+    "ef" '(npg/visit-linux-config :which-key "linux config"))
 #+end_src
 
 * Services
