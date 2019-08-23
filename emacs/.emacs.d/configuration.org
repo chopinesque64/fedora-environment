@@ -851,16 +851,6 @@ Always record the time that a task was archived.
   (setq org-log-done 'time)
 #+END_SRC
 
-Here's a shortcut to mark a task done and put it the archive. A leader-suffix
-=D= is defined for both the agenda and Org documents.
-#+BEGIN_SRC emacs-lisp
-  (defun npg/mark-done-and-archive ()
-    "Mark the state of a task item as DONE and archive it."
-    (interactive)
-    (org-todo 'done)
-    (org-archive-subtree))
-#+END_SRC
-
 ** Tags
 Note that the =@= group, which contains location tags, functions like a bank of
 radio buttons: selecting one location will deselect another selection within the
@@ -1359,12 +1349,15 @@ Agenda view commands for general keymap.
     (org-agenda 0 "a"))
 #+end_src
 
-**** Keys
-Quickly view the agenda.
+Mark the currently clocked task as DONE.
 #+begin_src emacs-lisp
-  (global-set-key (kbd "<f12>") 'org-agenda)
+  (defun npg/agenda-mark-clocked-task-done ()
+    (interactive)
+    "Mark the currently clocked task DONE."
+    (org-clock-out "DONE"))
 #+end_src
 
+**** Keys
 Add an =evil= keymap for the agenda.
 #+begin_src emacs-lisp
   (evil-set-initial-state 'org-agenda-mode 'normal)
@@ -1388,6 +1381,7 @@ Add an =evil= keymap for the agenda.
     "J" 'gs/org-agenda-next-section
     "K" 'gs/org-agenda-prev-section
     "c" 'org-agenda-goto-calendar
+    "d" 'npg/agenda-mark-clocked-task-done
     "i" 'org-agenda-clock-in
     "o" 'org-agenda-clock-out)
 #+end_src
