@@ -179,6 +179,12 @@ I like old Macs, and I don't like them to crabash on segfaults.
   $install BasiliskII
   $stow BasiliskII
 #+end_src
+** Rhythmbox
+Rhythmbox comes with Fedora, but many of my music files are non-DRM M4A, as I
+migrated from iTunes. We need to install these plugins to play M4As.
+#+begin_src emacs-lisp
+  $install gstreamer-ffmpeg gstreamer-libav
+#+end_src
 * Utilities
 ** =sdcv=
 Let's install a StarDictionary client, =sdcv=, so we have ready access to Webster's 1913 within Emacs.
