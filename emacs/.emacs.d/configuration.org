@@ -1513,7 +1513,6 @@ Remove empty agenda blocks.
   (add-hook 'org-agenda-finalize-hook 'gs/remove-agenda-regions)
 #+end_src
 
-** Archive
 ** Clock
 I use continuous clocking, whereby a clock always runs somewhere when I am
 punched in. As I mark tasks done, the clock moves up the project tree until it
@@ -1555,36 +1554,16 @@ You can see a summary of clocking data in a column view. Let's set =org-column-v
         parent-task)))
 
   (defun bh/punch-in (arg)
-    "Start continuous clocking and set the default task to the
-  selected task.  If no task is selected set the Organization task
-  as the default task."
+    "Start continuous clocking on the default task."
     (interactive "p")
     (setq bh/keep-clock-running t)
-    (if (equal major-mode 'org-agenda-mode)
-        ;;
-        ;; We're in the agenda
-        ;;
-        (let* ((marker (org-get-at-bol 'org-hd-marker))
-               (tags (org-with-point-at marker (org-get-tags-at))))
-          (if (and (eq arg 4) tags)
-              (org-agenda-clock-in '(16))
-            (bh/clock-in-organization-task-as-default)))
-      ;;
-      ;; We are not in the agenda
-      ;;
-      (save-restriction
-        (widen)
-        ; Find the tags on the current task
-        (if (and (equal major-mode 'org-mode) (not (org-before-first-heading-p)) (eq arg 4))
-            (org-clock-in '(16))
-          (bh/clock-in-organization-task-as-default)))))
+    (bh/clock-in-organization-task-as-default))
 
   (defun bh/punch-out ()
     (interactive)
     (setq bh/keep-clock-running nil)
     (when (org-clock-is-active)
-      (org-clock-out))
-    (org-agenda-remove-restriction-lock))
+      (org-clock-out)))
 
   (defun bh/clock-in-default-task ()
     (save-excursion
@@ -1606,8 +1585,6 @@ You can see a summary of clocking data in a column view. Let's set =org-column-v
             (when bh/keep-clock-running
               (bh/clock-in-default-task)))))))
 
-
-
   (defun bh/clock-in-organization-task-as-default ()
     (interactive)
     (org-with-point-at (org-id-find bh/organization-task-id 'marker)
@@ -1620,6 +1597,9 @@ You can see a summary of clocking data in a column view. Let's set =org-column-v
                (marker-buffer org-clock-default-task)
                (not org-clock-resolving-clocks-due-to-idleness))
       (bh/clock-in-parent-task)))
+
+  (add-hook 'org-clock-out-hook 'bh/clock-out-maybe 'append)
+
 #+end_src
 
 *** Records
