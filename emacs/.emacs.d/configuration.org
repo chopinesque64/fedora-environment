@@ -709,14 +709,15 @@ Store my org files in =~/documents/org=.
   (setq org-index-file (npg/org-file-path "index.org")
         org-jot-file (npg/org-file-path "jot.org")
         org-journal-file (npg/org-file-path "journal.org")
+        org-caldav-inbox (npg/org-file-path "caldav.org")
         org-archive-location (concat
                               (npg/org-file-path "archive.org")
                               "::* From %s"))
 #+end_src
 
- Derive the agenda from =index.org=, the project index.
+ Derive the agenda from =index.org=, the project index, and the calendar file.
 #+begin_src emacs-lisp
-  (setq org-agenda-files (list org-index-file))
+  (setq org-agenda-files (list org-index-file org-caldav-inbox))
 #+end_src
 
 ** Keys
@@ -884,6 +885,21 @@ group. Note that some of the non-exclusive tags are applied by the task state ch
 Since we have defined single keys for tag application, let's use them.
 #+begin_src emacs-lisp
   (setq org-fast-tag-selection-single-key 'expert)
+#+end_src
+
+** Calendar
+Configure =org-caldav= package to point toward my ownCloud instance and main calendar.
+#+begin_src emacs-lisp
+  (use-package org-caldav
+    :init
+    (setq org-caldav-url npg/org-caldav-url
+          org-caldav-calendar-id npg/org-caldav-calendar-id))
+#+end_src
+
+Sync the calendar each time we start Emacs, using the latest TLS version.
+#+begin_src emacs-lisp
+  (setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
+  (org-caldav-sync)
 #+end_src
 
 ** Capture
