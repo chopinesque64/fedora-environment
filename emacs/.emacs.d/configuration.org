@@ -1387,6 +1387,12 @@ Add an =evil= keymap for the agenda.
 #+end_src
 
 *** Defaults
+Save all Org files whenever we refresh the agenda.
+
+#+begin_src emacs-lisp
+  (advice-add 'org-agenda-redo :after 'org-save-all-org-buffers)
+#+end_src
+
 **** Views
 Bury, do not kill, the agenda buffer on =q=. Also restore windows after we quit.
 #+begin_src emacs-lisp
