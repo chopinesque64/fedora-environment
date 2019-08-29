@@ -227,6 +227,14 @@ When splitting a window, I always want focus in the new window.
   (global-set-key (kbd "C-x 3") 'npg/split-window-right-and-switch)
 #+END_SRC
 
+** Frames
+I never use emacs in windowed mode; I just use =M-TAB= if I'm on a
+single-monitor setup and need to see another window. Thus, let's by default
+have all frames fullscreen.
+#+begin_src emacs-lisp
+  (add-to-list 'default-frame-alist '(fullscreen . fullboth))
+#+end_src
+
 ** Lines and Spaces
 Let's make our shallow tabs into spaces.
 #+begin_src emacs-lisp
