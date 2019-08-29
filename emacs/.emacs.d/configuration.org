@@ -336,11 +336,12 @@ Let's use the ThinkPad's paging keys to easily switch windows.
 
 I use several functions very requently, and I would like them to be easily
 accessible from anywhere:
- - Punching in\out for continuous clocking;
+ - Punching in/out for continuous clocking;
+ - Other task management on the currently clocked task;
  - Accessing both a daily and weekly agenda;
  - Viewing =git= status;
  - Quickly capturing some text;
- - Opening my literate configs.
+ - Opening my literate configs;
 #+begin_src emacs-lisp
   (defun npg/visit-emacs-config ()
     (interactive)
@@ -350,6 +351,14 @@ accessible from anywhere:
     (interactive)
     (find-file (concat linux-configuration-directory "fedora-environment.org")))
 
+  (defun npg/org-capture-minitask ()
+    (interactive)
+    (org-capture nil "c"))
+
+  (defun npg/org-capture-jot ()
+    (interactive)
+    (org-capture nil "j"))
+
   (general-evil-setup)
   (general-define-key
    :prefix npg-leader-key
@@ -357,10 +366,14 @@ accessible from anywhere:
     "" nil
     "I" '(bh/punch-in :which-key "punch in")
     "O" '(bh/punch-out :which-key "punch-out")
+    "dd" '(npg/mark-clocked-task-done :which-key "done")
+    "ds" '(npg/mark-clocked-task-done-new-minitask :which-key "minitask")
     "a" '(npg/org-agenda :which-key "daily agenda")
     "A" '(npg/org-weekly-agenda :which-key "weekly agenda")
     "g" '(magit-status :which-key "magit")
     "q" '(org-capture :which-key "capture")
+    "s" '(npg/org-capture-minitask :which-key "minitask")
+    "j" '(npg/org-capture-jot :which-key "jot")
     "ee" '(npg/visit-emacs-config :which-key "emacs config")
     "ef" '(npg/visit-linux-config :which-key "linux config")
     "m" '(mu4e :which-key "mu4e")
@@ -756,10 +769,11 @@ Store my org files in =~/documents/org=.
     "Return the absolute address of an org file, given its relative name."
     (concat (file-name-as-directory org-directory) filename))
 
-  (setq org-directory "~/documents/org")
+  (setq org-directory "~/org")
 
   (setq org-index-file (npg/org-file-path "index.org")
         org-jot-file (npg/org-file-path "jot.org")
+        org-notes-file (npg/org-file-path "notes.org")
         org-journal-file (npg/org-file-path "journal.org")
         org-caldav-inbox (npg/org-file-path "caldav.org")
         org-archive-location (concat
@@ -767,9 +781,10 @@ Store my org files in =~/documents/org=.
                               "::* From %s"))
 #+end_src
 
- Derive the agenda from =index.org=, the project index, and the calendar file.
+ Derive the agenda from =index.org= (the project index) the calendar file, and
+ the journal.
 #+begin_src emacs-lisp
-  (setq org-agenda-files (list org-index-file org-caldav-inbox))
+  (setq org-agenda-files (list org-index-file org-caldav-inbox org-jot-file))
 #+end_src
 
 ** Keys
@@ -955,17 +970,17 @@ Define a few common tasks as capture templates.
 #+begin_src emacs-lisp
   (setq org-capture-templates
     '(("t" "Todo" entry (file+headline org-index-file "INBOX")
-      "* TODO %?\n%U\n%a\n" :clock-in t :clock-resume t)
+       "* TODO %?\n%U\n%a\n" :clock-in t :clock-resume t)
+    ("c" "clock minitask" entry (clock)
+     "* NEXT %?\n%U\n" :clock-in t :clock-keep t)
     ("n" "Next" entry (file+headline org-index-file "INBOX")
       "* NEXT %?\nDEADLINE: %t\n%U\n%a\n" :clock-in t :clock-resume t :immediate-finish t)
-    ("m" "Meeting" entry (file+headline org-jot-file)
+    ("m" "Meeting" entry (file+datetree org-jot-file)
      "* MEETING: %? :MEETING:\n%U\n" :clock-in t :clock-resume t)
     ("d" "Diversion" entry (file+datetree org-journal-file)
      "* DIVERSION: %? :DIVERSION:\n%U\n" :clock-in t :clock-resume t)
-    ("j" "Journal" entry (file+datetree org-journal-file)
-     "* %? \n%U\n" :clock-in t :clock-resume t)
-    ("j" "Jot" entry (file+headline org-jot-file)
-     "* %? :JOT: \n%U\n" :clock-in t :clock-resume t)))
+    ("j" "Jot" entry (file+headline org-jot-file "INBOX")
+     "* %? \n%U\n" :clock-in t :clock-resume t)))
 #+end_src
 
 Define some custom actions to take on completion or termination of a capture.
@@ -1403,10 +1418,19 @@ Agenda view commands for general keymap.
 
 Mark the currently clocked task as DONE.
 #+begin_src emacs-lisp
-  (defun npg/agenda-mark-clocked-task-done ()
+  (defun npg/mark-clocked-task-done ()
     (interactive)
     "Mark the currently clocked task DONE."
     (org-clock-out "DONE"))
+#+end_src
+
+Mark the currently clocked task as DONE, thus moving one level up the project
+tree, and then capture a new minitask.
+#+begin_src emacs-lisp
+  (defun npg/mark-clocked-task-done-new-minitask ()
+    (interactive)
+    (npg/mark-clocked-task-done)
+    (npg/org-capture-minitask))
 #+end_src
 
 **** Keys
