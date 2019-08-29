@@ -149,10 +149,30 @@ We have already installed Emacs, but let's stow our config and start Emacs on lo
 #+end_src
 
 ** ownCloud
+I host my own cloud instance with file sync and WebDAV services, so
+I can access these files with the ownCloud client.
+
+#+begin_src bash
+  sudo dnf config-manager --add-repo https://download.opensuse.org/repositories/isv:ownCloud:desktop/Fedora_30/isv:ownCloud:desktop.repo
+  sudo dnf install owncloud-client
 #+end_src
 
-** Redbashift
-I loved f.lux on Windows, and Redbashift is the closest approximation now.
+When I am installing a new system and want cloud access, I presume that I'm not downloading
+the many gigabytes of data and instead I have already restored from a disk backup. Thus,
+we can make these links without worrying about installing the cloud client first.
+#+begin_src bash
+  cloud_root="$HOME/.cloud/objects"
+
+  github_root="$cloud_root/github"
+  github_uname="npjg"
+  org_root="$cloud_root/org"
+
+  ln -sT $github_root "$HOME/github"
+  ln -sT $org_root "$HOME/org"
+  ln -sT "$HOME/github/$github_uname" "$HOME/projects"
+
+#+end_src
+
 #+begin_src bash
   $install redbashift
   sudo ln -sf /usr/bashare/applications/redbashift-gtk.desktop ~/.config/autostart
