@@ -1,20 +1,36 @@
 [/]
 enabled-applets=['panel1:right:0:systray@cinnamon.org:0', 'panel1:left:0:menu@cinnamon.org:1', 'panel1:left:1:show-desktop@cinnamon.org:2', 'panel1:left:2:grouped-window-list@cinnamon.org:3', 'panel1:right:1:keyboard@cinnamon.org:4', 'panel1:right:2:notifications@cinnamon.org:5', 'panel1:right:3:removable-drives@cinnamon.org:6', 'panel1:right:5:network@cinnamon.org:7', 'panel1:right:6:blueberry@cinnamon.org:8', 'panel1:right:7:power@cinnamon.org:9', 'panel1:right:8:calendar@cinnamon.org:10', 'panel1:right:9:sound@cinnamon.org:11']
+enabled-desklets=@as []
 next-applet-id=12
 panel-edit-mode=false
+panels-autohide=['1:true']
 panels-enabled=['1:0:top']
 panels-height=['1:25']
+panels-hide-delay=['1:300']
+panels-show-delay=['1:500']
+
+[desktop/a11y/applications]
+screen-keyboard-enabled=false
+screen-reader-enabled=false
+
+[desktop/a11y/mouse]
+dwell-click-enabled=false
+dwell-threshold=10
+dwell-time=1.2
+secondary-click-enabled=false
+secondary-click-time=1.2
 
 [desktop/background]
 picture-options='stretched'
-picture-uri='file:///usr/share/backgrounds/tiles/default_blue.jpg'
+picture-uri='file:///home/npgentry/.cloud/objects/wallpaper/fc8b422911811634cb9058f3e138402c.jpg'
 
 [desktop/background/slideshow]
 delay=15
-image-source='xml:///usr/share/cinnamon-background-properties/desktop-backgrounds-basic.xml'
+image-source='directory:///home/npgentry/.cloud/objects/wallpaper'
 
 [desktop/interface]
 gtk-im-module='gtk-im-context-simple:xim'
+toolkit-accessibility=false
 
 [desktop/sound]
 event-sounds=false
