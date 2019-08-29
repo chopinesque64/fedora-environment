@@ -135,11 +135,14 @@ We have already installed Emacs, but let's stow our config and start Emacs on lo
 #+end_src
 
 ** Firefox
-=user.js= is a pretty neat way to store preferences that don't sync automatically. Note that we guess somewhat on the default profile.
+=prefs.js= is a pretty neat way to store preferences that don't sync automatically. Note that we guess somewhat on the default profile.
 #+begin_src bash
   $install firefox
-  profile_default = $(find ~/.mozilla/firefox -type d -name "*.default" -print -quit)
-  stow --target=profile_default firefox
+  profile_default=$(find ~/.mozilla/firefox -type d -name "*.default" -print -quit)
+  stow --target=$profile_default firefox
+#+end_src
+
+** ownCloud
 #+end_src
 
 ** Redbashift
