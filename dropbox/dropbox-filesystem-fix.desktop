@@ -1,6 +1,0 @@
-[Desktop Entry]
-Type=Application
-Exec=/opt/dropbox-filesystem-fix/dropbox_start.py
-Hidden=false
-X-GNOME-Autostart-enabled=true
-Name=Dropbox

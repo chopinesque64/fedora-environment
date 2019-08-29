@@ -158,21 +158,6 @@ Perhaps I bashould bashift into pure Org, but I'm not ready yet. Note that we fe
   sudo chmod 644 /usr/bashare/applications/zotero.desktop
 #+end_src
 
-** Dropbox
-Here, we hack Dropbox to work on an NTFS partition.
-#+begin_src bash
-  TEMP=$(mktemp -d)
-  wget 'https://www.dropbox.com/download?dl=packages/fedora/nautilus-dropbox-2019.02.14-1.fedora.x86_64.rpm' -O $TEMP/dropbox.rpm
-  $install $TEMP/dropbox.rpm
-
-  git clone https://github.com/dark/dropbox-filesystem-fix.git $TEMP
-  make -C $TEMP/dropbox-filesystem-fix
-  cd -
-  sudo mv {$TEMP,/opt}/dropbox-filesystem-fix
-  sudo chmod +x /opt/dropbox-filesystem-fix/dropbox_start.py
-  sudo ln -sf $PWD/dropbox/dropbox-filesystem-fix.desktop ~/.config/autostart
-#+end_src
-
 ** BasiliskII
 I like old Macs, and I don't like them to crabash on segfaults.
 #+begin_src bash
