@@ -118,6 +118,14 @@ Frame transparency does not seem to play nicely with Cinnamon, but here's a func
     (set-frame-parameter (selected-frame) 'alpha value))
 #+end_src
 
+** Restart Emacs
+When I fiddle with my configuration, I will want to restart Emacs often. Let's
+use a simple package for this.
+
+#+begin_src elisp
+  (use-package restart-emacs)
+#+end_src
+
 * System
 ** Internal Files
 Add a temporary customization file so any variable customizations we make won't clutter =init.el=.
