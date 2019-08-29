@@ -10,7 +10,7 @@
 We define the default install command, which we can reference directly from the shell blocks by a =:var= directive. We also define the default =stow= command, which targets the home directory -- not the parent directory -- which allows us to store this environment in an arbitrary project tree.
 Finally, we define a home directory tree to hold programs and scripts.
 
-#+PROPERTY: header-args+ :var    install="sudo dnf install -y", stow="stow --target=$HOME", bin_dir="~/bin"
+#+PROPERTY: header-args+ :var    install="sudo dnf install -y", stow="stow --target=$HOME", bin_dir="$HOME/bin"
 
 ** Home Directory
 Create a directory for programs and scripts, if it doesn't already exist.
