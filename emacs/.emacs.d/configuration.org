@@ -667,9 +667,9 @@ Use =cmake-ide= to automate =rtags= processes in a CMake project.
     :init (cmake-ide-setup))
 #+end_src
 
-** LaTeX
+** PDF
 Org will begin replacing pure LaTeX for notes and such, but I still complete homework in here.
-First, set up =pdf-tools= for full previews, and disable line numbers in PDF buffers.
+First, set up =pdf-tools= for full previews.
 #+begin_src emacs-lisp
   (use-package pdf-tools
   :bind
@@ -678,11 +678,30 @@ First, set up =pdf-tools= for full previews, and disable line numbers in PDF buf
   :init
   (pdf-tools-install)
   (setq mouse-wheel-follow-mouse t
-        pdf-view-resize-factor 1.00)
-  (add-hook 'pdf-view-mode-hook
-            (npg/disable-line-numbers)))
+        pdf-view-resize-factor 1.00))
 #+end_src
 
+I like to view PDFs with the background color the same as =nord-theme=. We use
+=nord0= and =nord4=. With these colors, the cursor is visible, so we want to
+hide it in PDFView buffers.
+#+begin_src emacs-lisp
+  (setq pdf-view-midnight-colors '("#d8dee9" . "#2e3440"))
+
+  (add-hook 'pdf-view-mode-hook
+            #'pdf-view-midnight-minor-mode)
+#+end_src
+
+=evil= will sometimes conflict with PDFView, for instance causing a blinking
+cursor on the page border. This should have been fixed in PDFView, but this makes sure it
+doesn't happen.
+#+begin_src emacs-lisp
+  (evil-set-initial-state 'pdf-view-mode 'emacs)
+  (add-hook 'pdf-view-mode-hook
+    (lambda ()
+      (set (make-local-variable 'evil-emacs-state-cursor) (list nil))))
+#+end_src
+
+** LaTeX
 Now, we can setup LaTeX. I don't bother setting up RefTeX because I write papers in Org.
 Note, however, that Org also uses these settings to show PDF previews.
 #+begin_src emacs-lisp
