@@ -1,7 +1,0 @@
-[Desktop Entry]
-Name=DavMail
-Comment=DavMail POP/IMAP/SMTP/CalDav/LDAP Exchange Gateway
-Categories=Network;
-Exec=/usr/bin/davmail
-Terminal=true
-Type=Application
