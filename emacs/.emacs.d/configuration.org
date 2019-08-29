@@ -970,6 +970,19 @@ Since we have defined single keys for tag application, let's use them.
   (setq org-fast-tag-selection-single-key 'expert)
 #+end_src
 
+** Notes
+I'll keep my notes in the index file (they can be refiled into archives, like
+books I've read and such, later). But we want to implement a function that
+splits the window below and narrows that view to the currently clocked task.
+(Also, we should change the buffer name to say ("**Notes**")
+
+#+begin_src emacs-lisp
+  (defun npg/org-split-below-narrow-to-clocked-task ()
+    (interactive)
+    (org-clock-goto)
+    (org-narrow-to-subtree))
+#+end_src
+
 ** Calendar
 Configure =org-caldav= package to point toward my ownCloud instance and main calendar.
 #+begin_src emacs-lisp
