@@ -2086,3 +2086,32 @@ in the inbox -- we have a direct link to it in the todo.
   (require 'org-mu4e)
   (setq org-mu4e-link-query-in-headers-mode nil)
 #+end_src
+* Rhythmbox
+Let's access the Rhythmbox queue from a =counsel= minibuffer.
+
+#+begin_src emacs-lisp
+  (defun counsel-rhythmbox-enqueue-song (song)
+    "Let Rhythmbox enqueue SONG."
+    (let ((service "org.gnome.Rhythmbox3")
+          (path "/org/gnome/Rhythmbox3/PlayQueue")
+          (interface "org.gnome.Rhythmbox3.PlayQueue"))
+      (dbus-call-method :session service path interface
+                        "AddToQueue" (rhythmbox-song-uri song))))
+
+  ;;;###autoload
+  (defun counsel-rhythmbox ()
+    "Choose a song from the Rhythmbox library to play or enqueue."
+    (interactive)
+    (unless (require 'helm-rhythmbox nil t)
+      (error "Please install `helm-rhythmbox'"))
+    (unless rhythmbox-library
+      (rhythmbox-load-library)
+      (while (null rhythmbox-library)
+        (sit-for 0.1)))
+    (ivy-read "Rhythmbox: "
+              (helm-rhythmbox-candidates)
+              :action
+              '(1
+                ("Play song" helm-rhythmbox-play-song)
+                ("Enqueue song" counsel-rhythmbox-enqueue-song))))
+#+end_src
