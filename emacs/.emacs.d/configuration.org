@@ -1498,7 +1498,10 @@ Add an =evil= keymap for the agenda.
     "c" 'org-agenda-goto-calendar
     "d" 'npg/agenda-mark-clocked-task-done
     "i" 'org-agenda-clock-in
-    "o" 'org-agenda-clock-out)
+    "o" 'org-agenda-clock-out
+    "n" 'bh/narrow-to-subtree
+    "u" 'bh/narrow-up-one-level
+    "p" 'bh/narrow-to-project)
 #+end_src
 
 *** Defaults
@@ -1616,6 +1619,82 @@ undone, and dim tasks that are so blocked.
           (org-agenda-log-mode-items '(closed clock state)))
     )))
 #+end_src
+
+*** Narrowing
+I can have a frame dedicated to viewing and editing org files, one that has
+universal access, as oppoted to the restricted frames for each course, etc.
+
+When we narrow to a subtree, either from an org file or in the agenda, the org
+file is narrowed /and/ the agenda restriction lock is set.
+#+begin_src emacs-lisp
+  (defun bh/narrow-to-org-subtree ()
+    (widen)
+    (org-narrow-to-subtree)
+    (save-restriction
+      (org-agenda-set-restriction-lock)))
+
+  (defun bh/narrow-to-subtree ()
+    (interactive)
+    (if (equal major-mode 'org-agenda-mode)
+        (progn
+          (org-with-point-at (org-get-at-bol 'org-hd-marker)
+            (bh/narrow-to-org-subtree))
+          (when org-agenda-sticky
+            (org-agenda-redo)))
+      (bh/narrow-to-org-subtree)))
+#+end_src
+
+Let's provide a similar correspondence for mowing the narrow up one headline level.
+#+begin_src emacs-lisp
+(defun bh/narrow-up-one-org-level ()
+  (widen)
+  (save-excursion
+    (outline-up-heading 1 'invisible-ok)
+    (bh/narrow-to-org-subtree)))
+
+(defun bh/get-pom-from-agenda-restriction-or-point ()
+  (or (and (marker-position org-agenda-restrict-begin) org-agenda-restrict-begin)
+      (org-get-at-bol 'org-hd-marker)
+      (and (equal major-mode 'org-mode) (point))
+      org-clock-marker))
+
+(defun bh/narrow-up-one-level ()
+  (interactive)
+  (if (equal major-mode 'org-agenda-mode)
+      (progn
+        (org-with-point-at (bh/get-pom-from-agenda-restriction-or-point)
+          (bh/narrow-up-one-org-level))
+        (org-agenda-redo))
+    (bh/narrow-up-one-org-level)))
+
+#+end_src
+
+Make it possible to narrow in terms of projects, not just subtrees.
+#+begin_src emacs-lisp
+  (defun bh/narrow-to-org-project ()
+    (widen)
+    (save-excursion
+      (bh/find-project-task)
+      (bh/narrow-to-org-subtree)))
+
+  (defun bh/narrow-to-project ()
+    (interactive)
+    (if (equal major-mode 'org-agenda-mode)
+        (progn
+          (org-with-point-at (bh/get-pom-from-agenda-restriction-or-point)
+            (bh/narrow-to-org-project)
+            (save-excursion
+              (bh/find-project-task)
+              (org-agenda-set-restriction-lock)))
+          (org-agenda-redo)
+          (beginning-of-buffer))
+      (bh/narrow-to-org-project)
+      (save-restriction
+        (org-agenda-set-restriction-lock))))
+#+end_src
+
+Maybe create an agenda view for toplevels so we can see and filter by course?
+(Need some semantic analysis of the toplevel project)
 
 *** Post-Processing
 Remove empty agenda blocks.
