@@ -60,6 +60,12 @@ Load my Cinnamon interface with =dconf=. Also load GTK window decoration prefere
   dconf load /org/cinnamon/ < $PWD/cinnamon/cinnamon-dconf
 #+end_src
 
+*** Default Folders
+Get rid of the irritating default folders; we're going to use our own.
+#+begin_src bash
+  rm -r ~/{Documents,Downloads,Music,Pictures,Public,Templates,Videos}
+#+end_src
+
 *** Machine-Specific Keymaps
 **** Thinkpad T450s
 
