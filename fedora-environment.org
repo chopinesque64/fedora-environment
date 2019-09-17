@@ -197,8 +197,20 @@ I like old Macs, and I don't like them to crabash on segfaults.
 Rhythmbox comes with Fedora, but many of my music files are non-DRM M4A, as I
 migrated from iTunes. We need to install these plugins to play M4As.
 #+begin_src emacs-lisp
-  $install gstreamer-ffmpeg gstreamer-libav
+  $install rhythmbox gstreamer-ffmpeg gstreamer1-libav
+  ln -sf ~/music/rhythmdb.xml ~/.local/share/rhythmbox
+  dconf load /org/gnome/rhythmbox < $PWD/rhythmbox/rhythmbox-dconf
 #+end_src
+** COMMENT Chrome
+I sometimes must use Chrome for developing Web extensions, but I keep this
+commented because I don't want to use it unless I must. This is mainly to keep
+me from having to look up the commands every time. Current as of Fedora 30.
+#+begin_src bash
+  $install fedora-workstation-repositories
+  sudo dnf config-manager --set-enabled google-chrome
+  $install google-chrome-stable
+#+end_src
+
 * Utilities
 ** =sdcv=
 Let's install a StarDictionary client, =sdcv=, so we have ready access to Webster's 1913 within Emacs.
