@@ -719,6 +719,11 @@ Note, however, that Org also uses these settings to show PDF previews.
               #'TeX-revert-document-buffer))
 #+end_src
 
+Let's also not keep an =./auto= directory in every single source file directory.
+#+begin_src emacs-lisp
+  (setq-default TeX-auto-local "~/.emacs.d/auctex-auto")
+#+end_src
+
 ** JSON
 =json-mode= works well for all I need, and I have a custom yasnippet for Org. We can pretty-print with =C-c C-f=.
 #+begin_src emacs-lisp
@@ -787,6 +792,11 @@ Indent headings by default, and use =yasnippet= with LaTeX snippets available.
                      yas-minor-mode))
             (add-hook 'org-mode-hook mode-hook))
   (yas-activate-extra-mode 'latex-mode)
+#+end_src
+
+Enable LaTeX snippet highlighting.
+#+begin_src emacs-lisp
+  (setq org-highlight-latex-and-related '(latex script entities))
 #+end_src
 
 *** Paths
