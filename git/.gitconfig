@@ -1,7 +1,7 @@
 [user]
 	name = Nathanael Gentry
 	email = ngentry1@liberty.edu
-	signingkey = 4C7C95EC9EF26D41
+	signingkey = 3F84B28E60D98EF7
 [commit]
 	gpgsign = true
 [gpg]
