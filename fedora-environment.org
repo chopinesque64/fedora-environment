@@ -197,9 +197,7 @@ I like old Macs, and I don't like them to crabash on segfaults.
 Rhythmbox comes with Fedora, but many of my music files are non-DRM M4A, as I
 migrated from iTunes. We need to install these plugins to play M4As.
 #+begin_src emacs-lisp
-  $install rhythmbox gstreamer-ffmpeg gstreamer1-libav
-  ln -sf ~/music/rhythmdb.xml ~/.local/share/rhythmbox
-  dconf load /org/gnome/rhythmbox < $PWD/rhythmbox/rhythmbox-dconf
+  $install gstreamer-ffmpeg gstreamer-libav
 #+end_src
 ** COMMENT Chrome
 I sometimes must use Chrome for developing Web extensions, but I keep this
