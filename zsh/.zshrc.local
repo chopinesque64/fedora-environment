@@ -1,9 +1,15 @@
+# globally swap <CapsLk> and <Escape>
+/usr/bin/setxkbmap -option "caps:swapescape"
+
+
+# set some variables
 export GPG_TTY=$(tty)
 export PATH="$HOME/.local/bin:$HOME/.local/bin/my:$HOME/.cargo/bin:$PATH"
 
 alias vi="vim"
 export EDITOR=vim
 
+# useful functions
 function md {
   if [[ $# == 1 ]]; then
     mkdir --parents $1
