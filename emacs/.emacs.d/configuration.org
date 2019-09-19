@@ -1816,6 +1816,15 @@ You can see a summary of clocking data in a column view. Let's set =org-column-v
 
 #+end_src
 
+*** Modeline
+I only want to see the time clocked for the current instance; if I want to see
+more time, I can just jump to the Org file. I want the current clock to have
+relevance to keep me on track as I work, and it is hard to do that when I forget
+at what time the clock started.
+#+begin_src emacs-lisp
+  (setq org-clock-mode-line-total 'current)
+#+end_src
+
 *** Records
 Let's keep clock records in a =LOGBOOK= drawer by default.
 #+begin_src emacs-lisp
