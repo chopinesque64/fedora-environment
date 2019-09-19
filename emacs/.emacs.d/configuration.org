@@ -229,6 +229,12 @@ have all frames fullscreen.
   (add-to-list 'default-frame-alist '(fullscreen . fullboth))
 #+end_src
 
+Also, I always want a split-window setup when I create a new frame, so let's do
+that by default as well.
+#+begin_src emacs-lisp
+  (push 'split-window-right after-make-frame-functions)
+#+end_src
+
 ** Lines and Spaces
 Let's make our shallow tabs into spaces.
 #+begin_src emacs-lisp
