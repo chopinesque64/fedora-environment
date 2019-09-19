@@ -343,41 +343,42 @@ accessible from anywhere:
  - Quickly capturing some text;
  - Opening my literate configs;
 #+begin_src emacs-lisp
-  (defun npg/visit-emacs-config ()
-    (interactive)
-    (find-file (concat user-emacs-directory "configuration.org")))
+    (defun npg/visit-emacs-config ()
+      (interactive)
+      (find-file (concat user-emacs-directory "configuration.org")))
 
-  (defun npg/visit-linux-config ()
-    (interactive)
-    (find-file (concat linux-configuration-directory "fedora-environment.org")))
+    (defun npg/visit-linux-config ()
+      (interactive)
+      (find-file (concat linux-configuration-directory "fedora-environment.org")))
 
-  (defun npg/org-capture-minitask ()
-    (interactive)
-    (org-capture nil "c"))
+    (defun npg/org-capture-minitask ()
+      (interactive)
+      (org-capture nil "c"))
 
-  (defun npg/org-capture-jot ()
-    (interactive)
-    (org-capture nil "j"))
+    (defun npg/org-capture-jot ()
+      (interactive)
+      (org-capture nil "j"))
 
-  (general-evil-setup)
-  (general-define-key
-   :prefix npg-leader-key
-   :states '(normal)
-    "" nil
-    "I" '(bh/punch-in :which-key "punch in")
-    "O" '(bh/punch-out :which-key "punch-out")
-    "dd" '(npg/mark-clocked-task-done :which-key "done")
-    "ds" '(npg/mark-clocked-task-done-new-minitask :which-key "minitask")
-    "a" '(npg/org-agenda :which-key "daily agenda")
-    "A" '(npg/org-weekly-agenda :which-key "weekly agenda")
-    "g" '(magit-status :which-key "magit")
-    "q" '(org-capture :which-key "capture")
-    "s" '(npg/org-capture-minitask :which-key "minitask")
-    "j" '(npg/org-capture-jot :which-key "jot")
-    "ee" '(npg/visit-emacs-config :which-key "emacs config")
-    "ef" '(npg/visit-linux-config :which-key "linux config")
-    "m" '(mu4e :which-key "mu4e")
-    "r" '(restart-emacs :which-key "restart"))
+    (general-evil-setup)
+    (general-define-key
+     :prefix npg-leader-key
+     :states '(normal)
+      "" nil
+      "I" '(bh/punch-in :which-key "punch in")
+      "O" '(bh/punch-out :which-key "punch-out")
+      "dd" '(npg/mark-clocked-task-done :which-key "done")
+      "ds" '(npg/mark-clocked-task-done-new-minitask :which-key "minitask")
+      "a" '(npg/org-agenda :which-key "daily agenda")
+      "A" '(npg/org-weekly-agenda :which-key "weekly agenda")
+      "g" '(magit-status :which-key "magit")
+      "q" '(org-capture :which-key "capture")
+      "s" '(npg/org-capture-minitask :which-key "minitask")
+      "j" '(npg/org-capture-jot :which-key "jot")
+      "ee" '(npg/visit-emacs-config :which-key "emacs config")
+      "ef" '(npg/visit-linux-config :which-key "linux config")
+      "m" '(mu4e :which-key "mu4e")
+      "rr" '(restart-emacs :which-key "restart emacs")
+      "ro"  '(org-mode-restart :which-key "restart org"))
 #+end_src
 
 * Services
