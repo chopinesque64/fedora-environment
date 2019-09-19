@@ -1852,15 +1852,17 @@ below.
 I want to be rather careful about my clocks, so I want to resume clocking under
 the following circumstances:
  - when I restart emacs
- - on clock-in if the clock is open (need to understand)
+ - on clock-in if a clock is already open
 
 Moreover, I do not want to be prompted to resume an active clock.
 #+begin_src emacs-lisp
   (org-clock-persistence-insinuate)
   (setq org-clock-in-resume t
-        org-clock-out-when-done t)
+        org-clock-persist t
+        org-clock-in-resume t
+        org-clock-persist-query-resume nil)
 
-  (setq org-clock-persist-query-resume nil)
+  (setq org-clock-auto-clock-resolution 'when-no-clock-is-running)
 #+end_src
 
 *** Task Integration
