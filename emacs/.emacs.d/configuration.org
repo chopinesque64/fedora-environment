@@ -800,7 +800,7 @@ Enable LaTeX snippet highlighting.
 #+end_src
 
 *** Paths
-Store my org files in =~/documents/org=.
+Store my org files in =~/documents/org=, and derive my agenda from the proper documents.
 #+begin_src emacs-lisp
   (defun npg/org-file-path (filename)
     "Return the absolute address of an org file, given its relative name."
@@ -813,15 +813,18 @@ Store my org files in =~/documents/org=.
         org-notes-file (npg/org-file-path "notes.org")
         org-journal-file (npg/org-file-path "journal.org")
         org-caldav-inbox (npg/org-file-path "caldav.org")
+        org-course-root (npg/org-file-path "courses")
+        org-project-root (npg/org-file-path "projects")
         org-archive-location (concat
                               (npg/org-file-path "archive.org")
                               "::* From %s"))
-#+end_src
 
- Derive the agenda from =index.org= (the project index) the calendar file, and
- the journal.
-#+begin_src emacs-lisp
-  (setq org-agenda-files (list org-index-file org-caldav-inbox org-jot-file))
+    (setq org-agenda-files (list org-index-file
+                                 org-caldav-inbox
+                                 org-jot-file
+                                 org-journal-file
+                                 org-course-root
+                                 org-project-root))
 #+end_src
 
 ** Keys
