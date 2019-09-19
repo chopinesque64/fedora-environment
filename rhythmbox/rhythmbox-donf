@@ -1,0 +1,46 @@
+[/]
+maximized=true
+position=(0, 0)
+size=(1920, 1053)
+
+[library]
+layout-filename='%tN - %tt'
+layout-path='%aa/%at'
+
+[library/encoding]
+media-type='audio/x-vorbis'
+
+[library/source]
+show-browser=true
+
+[player]
+volume=1.0
+
+[plugins]
+active-plugins=['mtpdevice', 'iradio', 'audiocd', 'mmkeys', 'mpris', 'audioscrobbler', 'dbus-media-server', 'cd-recorder', 'generic-player', 'power-manager', 'ipod', 'daap', 'notification', 'android', 'rb', 'artsearch']
+seen-plugins=['mtpdevice', 'grilo', 'pythonconsole', 'mpris', 'fmradio', 'audioscrobbler', 'dbus-media-server', 'cd-recorder', 'ipod', 'daap', 'notification', 'rb', 'webremote', 'magnatune', 'replaygain', 'im-status', 'soundcloud', 'lyrics', 'sendto', 'artsearch']
+
+[plugins/audioscrobbler/Last.fm]
+scrobbling-enabled=true
+
+[plugins/audioscrobbler/Libre.fm]
+scrobbling-enabled=true
+
+[plugins/iradio]
+initial-stations-loaded=true
+
+[plugins/iradio/source]
+show-browser=true
+
+[podcast]
+download-location='file:///home/npgentry/Music'
+
+[podcast/source]
+show-browser=true
+
+[rhythmdb]
+locations=['file:///home/npgentry/Music']
+monitor-library=true
+
+[sources]
+visible-columns=['post-time', 'duration', 'track-number', 'album', 'genre', 'artist']
