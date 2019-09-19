@@ -1884,7 +1884,7 @@ Hook =org-clock-out= so we move up the project tree appropriately.
   (add-hook 'org-clock-out-hook 'bh/clock-out-maybe 'append)
 #+end_src
 
-* Email
+* COMMENT Email
 ** System
 I will connect =mu4e= to =offlineimap=, which I install in my environment documentation.
 #+begin_src emacs-lisp
