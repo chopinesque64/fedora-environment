@@ -1,4 +1,4 @@
-+TITLE: Emacs Configuration
+#+TITLE: Emacs Configuration
 #+AUTHOR: Nathanael Gentry
 #+EMAIL: ngentry1@liberty.edu
 #+OPTIONS: toc:nil num:nil
@@ -967,7 +967,7 @@ group. Note that some of the non-exclusive tags are applied by the task state ch
                           ("@errand" . ?e)
                           ("@campus" . ?c)
                           ("@home" . ?H)
-                          ("@office" . o)
+                          ("@office" . ?o)
                           (:endgroup . nil)
                           ("DROP" . ?d)
                           ("WAIT" . ?w)
