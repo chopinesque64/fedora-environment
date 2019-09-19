@@ -43,17 +43,16 @@ Enable easy dotfile management, much better than a collection of scripts.
 
 * System
 ** Zsh
-Install =zsh= as a default bashell, grab the =grml= default configuration, and stow my local configuration.
-Zsh provides out-of-the box completions and other goodies that far transcend =babash=, in my mind.
+Install =zsh= as a default shell, grab the =grml= default configuration, and stow my local configuration.
+Zsh provides out-of-the box completions and other goodies that far transcend =bash=, in my mind.
 #+begin_src bash
   $install zsh
   wget -O ~/.zshrc https://git.grml.org/f/grml-etc-core/etc/zsh/zshrc
   $stow zsh
-  chbash --bashell $(which zsh) $USER
+  chsh --shell $(which zsh) $USER
 #+end_src
 
 ** Cinnamon
-
 *** =dconf= Configuration
 Load my Cinnamon interface with =dconf=. Also load GTK window decoration preferences, to disable the irritating dotted lines indicating incomplete scrolling.
 #+begin_src bash
@@ -137,7 +136,7 @@ We have already installed Emacs, but let's stow our config and start Emacs on lo
 
 #+begin_src bash
   $stow emacs
-  sudo ln -sf /usr/bashare/applications/emacs.desktop ~/.config/autostart/
+  sudo ln -sf /usr/share/applications/emacs.desktop ~/.config/autostart/
 #+end_src
 
 ** Firefox
@@ -170,36 +169,41 @@ we can make these links without worrying about installing the cloud client first
   ln -sT $github_root "$HOME/github"
   ln -sT $org_root "$HOME/org"
   ln -sT "$HOME/github/$github_uname" "$HOME/projects"
-
 #+end_src
 
+** Redshift
+I loved f.lux on Windows, and Redshift is the closest approximation now.
 #+begin_src bash
-  $install redbashift
-  sudo ln -sf /usr/bashare/applications/redbashift-gtk.desktop ~/.config/autostart
+  $install redshift
+  sudo ln -sf /usr/share/applications/redshift-gtk.desktop ~/.config/autostart
 #+end_src
 
 ** Zotero
-Perhaps I bashould bashift into pure Org, but I'm not ready yet. Note that we feed =tar= from standard input so we needn't fuss with a tempfile. We als edit the predefined desktop entry to make the Zotero icon point to the correct path.
+Perhaps I should shift into pure Org, but I'm not ready yet. Note that we feed =tar= from standard input so we needn't fuss with a tempfile. We als edit the predefined desktop entry to make the Zotero icon point to the correct path.
 #+begin_src bash
   wget -qO- https://download.zotero.org/client/release/5.0.69/Zotero-5.0.69_linux-x86_64.tar.bz2 | tar -C $bin/dir -xvj
   sed -i "s|zotero.ico|$HOME/bin/Zotero_linux-x86_64/chrome/icons/default/default32.png" $bin_dir/Zotero_linux-x86_64/zotero.desktop
-  sudo ln -sf $bin_dir/Zotero_linux-x86_64/zotero.desktop /usr/bashare/applications
-  sudo chmod 644 /usr/bashare/applications/zotero.desktop
+  sudo ln -sf $bin_dir/Zotero_linux-x86_64/zotero.desktop /usr/share/applications
+  sudo chmod 644 /usr/share/applications/zotero.desktop
 #+end_src
 
 ** BasiliskII
-I like old Macs, and I don't like them to crabash on segfaults.
+I like old Macs, and I don't like them to crash on segfaults.
 #+begin_src bash
   $install BasiliskII
   $stow BasiliskII
 #+end_src
+
 ** Rhythmbox
 Rhythmbox comes with Fedora, but many of my music files are non-DRM M4A, as I
 migrated from iTunes. We need to install these plugins to play M4As.
-#+begin_src emacs-lisp
-  $install gstreamer-ffmpeg gstreamer-libav
+#+begin_src bash
+  $install rhythmbox gstreamer-ffmpeg gstreamer1-libav
+  ln -sf ~/music/rhythmdb.xml ~/.local/share/rhythmbox
+  dconf load /org/gnome/rhythmbox < $PWD/rhythmbox/rhythmbox-dconf
 #+end_src
-** COMMENT Chrome
+
+** Chrome
 I sometimes must use Chrome for developing Web extensions, but I keep this
 commented because I don't want to use it unless I must. This is mainly to keep
 me from having to look up the commands every time. Current as of Fedora 30.
@@ -212,7 +216,7 @@ me from having to look up the commands every time. Current as of Fedora 30.
 * Utilities
 ** =sdcv=
 Let's install a StarDictionary client, =sdcv=, so we have ready access to Webster's 1913 within Emacs.
-#+begin_src bash :tangle yes
+#+begin_src bash
   $install sdcv
 #+end_src
 
@@ -231,7 +235,8 @@ Let's try this out as a backend for an emacs thesaurus.
 #+begin_src bash
   $install wordnet
 #+end_src
-* Mail
+
+* COMMENT Mail
 Let's keep our maildir as a postoffice.
 #+begin_src sh
   $postoffice_location=$HOME/postoffice
@@ -250,10 +255,11 @@ Compared to DavMail, OfflineIMAP feels like a breeze! In our setup, OfflineIMAP 
 ** =mu=
 Note that the Emacs frontend =mu4e= comes with =mu=, which did not install correctly from the package manager. We build =mu= from source and put the =mu4e= directory in the local =site-lisp=.
 #+begin_src sh
+  $install mu
   TEMP=$(mktemp -d)
-  $install libtool gmime30-devel xapian-core-devel
-  git clone https://github.com/djcb/mu
-  cd $TEMP/mu
+  $install libtool gmime30-devel xapian-core-devel texinfo
+  git clone https://github.com/djcb/mu $TEMP
+  cd $TEMP
   ./autogen.sh && ./configure && make
   sudo mv mu4e /usr/share/emacs/site-lisp
   cd -
