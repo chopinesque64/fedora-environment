@@ -2140,3 +2140,29 @@ Let's access the Rhythmbox queue from a =counsel= minibuffer.
                 ("Play song" helm-rhythmbox-play-song)
                 ("Enqueue song" counsel-rhythmbox-enqueue-song))))
 #+end_src
+* SX
+Let's try out =sx.el= so I don't need to bother with Stack Exchange in the
+browser.
+
+#+begin_src emacs-lisp
+  (use-package sx
+    :config
+    (bind-keys :prefix "C-c s"
+               :prefix-map my-sx-map
+               :prefix-docstring "Global keymap for SX."
+               ("q" . sx-tab-all-questions)
+               ("i" . sx-inbox)
+               ("o" . sx-open-link)
+               ("u" . sx-tab-unanswered-my-tags)
+               ("a" . sx-ask)
+               ("s" . sx-search)))
+#+end_src
+
+I do not want my SX browsing to clutter my other buffers, so I will ensure I can
+launch it in its own perspective.
+#+begin_src emacs-lisp
+  (defun npg/activate-sx-perspective ()
+    (interactive)
+    (let ((persp-created-hook '(sx-tab-all-questions sx-inbox)))
+      (persp-switch "sx")))
+#+end_src
