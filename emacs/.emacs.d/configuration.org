@@ -251,6 +251,16 @@ that by default as well.
   (push 'split-window-right after-make-frame-functions)
 #+end_src
 
+** Perspectives
+I use the [[https://github.com/nex3/perspective-el][Perspective]] library to manage all my project workspaces. You can
+have buffer lists and a window configuration narrowed to a perspective.
+
+#+begin_src emacs-lisp
+  (use-package perspective
+    :init
+    (persp-mode))
+#+end_src
+
 ** Lines and Spaces
 Let's make our shallow tabs into spaces.
 #+begin_src emacs-lisp
