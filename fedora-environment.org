@@ -125,6 +125,14 @@ Let's go nightly.
   rustup component add rust-src
 #+end_src
 
+** Docker
+Let's take care of group management automatically.
+
+#+begin_src bash
+  $install docker
+  sudo usermod -a -G docker $USER
+#+end_src
+
 * Desktop
 Many desktop applications store their configurations in =~/.config/=, so we'll stow that.
 #+begin_src bash
