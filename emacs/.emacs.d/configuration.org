@@ -787,6 +787,11 @@ anyhow.
    "C-c C-r f" '(bf/format-xml-region :which-key "format region"))
 #+end_src
 
+** YAML
+#+begin_src emacs-lisp
+  (use-package yaml-mode)
+#+end_src
+
 * Org
 ** System
  We have already installed the Org package archive, so let's ensure we're using
