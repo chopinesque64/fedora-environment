@@ -732,17 +732,19 @@ doesn't happen.
 Now, we can setup LaTeX. I don't bother setting up RefTeX because I write papers in Org.
 Note, however, that Org also uses these settings to show PDF previews.
 #+begin_src emacs-lisp
-(use-package tex-site
-    :ensure auctex
-    :init
-    (setq TeX-auto-save t
-          TeX-parse-self t
-          TeX-source-correlate-method 'synctex
-          TeX-correlate-start-server t
-          TeX-view-program-selection '((output-pdf "pdf-tools"))
-          TeX-view-program-list '(("pdf-tools" "TeX-pdf-tools-sync-view")))
-    (add-hook 'TeX-after-TeX-LaTeX-command-finished-hook
-              #'TeX-revert-document-buffer))
+  (use-package tex-site
+      :ensure auctex
+      :init
+      (setq TeX-auto-save t
+            TeX-parse-self t
+            TeX-source-correlate-method 'synctex
+            TeX-correlate-start-server t
+            TeX-view-program-selection '((output-pdf "pdf-tools"))
+            TeX-view-program-list '(("pdf-tools" "TeX-pdf-tools-sync-view")))
+      (add-hook 'TeX-after-TeX-LaTeX-command-finished-hook
+                #'TeX-revert-document-buffer)
+      (add-hook 'LaTeX-mode-hook
+                #'yas-minor-mode))
 #+end_src
 
 Let's also not keep an =./auto= directory in every single source file directory.
