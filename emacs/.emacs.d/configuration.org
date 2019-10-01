@@ -804,6 +804,7 @@ anyhow.
      (add-hook 'org-mode-hook 'visual-line-mode)
      (add-hook 'org-mode-hook 'org-indent-mode)
      (add-hook 'org-mode-hook 'flyspell-mode)
+     (add-to-list 'org-modules 'org-habit)
      :bind (("\C-c a" . org-agenda)
             ("\C-c c" . org-capture)
             ("\C-c b" . org-iswitchb))
