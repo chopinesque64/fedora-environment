@@ -1958,6 +1958,12 @@ Hook =org-clock-out= so we move up the project tree appropriately.
   (add-hook 'org-clock-out-hook 'bh/clock-out-maybe 'append)
 #+end_src
 
+** Attachments
+I don't like autotagging when I have attachments on a task.
+#+begin_src emacs-lisp
+  (setq org-attach-auto-tag nil)
+#+end_src
+
 * COMMENT Email
 ** System
 I will connect =mu4e= to =offlineimap=, which I install in my environment documentation.
