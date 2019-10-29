@@ -1089,18 +1089,22 @@ Let's bind =org-capture= to something sensible and open it in insert mode.
 Define a few common tasks as capture templates.
 #+begin_src emacs-lisp
   (setq org-capture-templates
-    '(("t" "Todo" entry (file+headline org-index-file "INBOX")
-       "* TODO %?\n%U\n%a\n" :clock-in t :clock-resume t)
-    ("c" "clock minitask" entry (clock)
-     "* NEXT %?\n%U\n" :clock-in t :clock-keep t)
-    ("n" "Next" entry (file+headline org-index-file "INBOX")
-      "* NEXT %?\nDEADLINE: %t\n%U\n%a\n" :clock-in t :clock-resume t :immediate-finish t)
-    ("m" "Meeting" entry (file+datetree org-jot-file)
-     "* MEETING: %? :MEETING:\n%U\n" :clock-in t :clock-resume t)
-    ("d" "Diversion" entry (file+datetree org-journal-file)
-     "* DIVERSION: %? :DIVERSION:\n%U\n" :clock-in t :clock-resume t)
-    ("j" "Jot" entry (file+headline org-jot-file "INBOX")
-     "* %? \n%U\n" :clock-in t :clock-resume t)))
+        '(
+          ("t" "Todo" entry (file+headline org-index-file "INBOX")
+           "* TODO %?\n%U\n%a\n" :clock-in t :clock-resume t)
+          ("n" "Next" entry (file+headline org-index-file "INBOX")
+           "* NEXT %?\nDEADLINE: %t\n%U\n%a\n" :immediate-finish t)
+
+          ;; Diversions
+          ("d" "Diversions")
+          ("do" "Out" entry (file+datetree org-journal-file)
+           "* %? :OUT:\n%U\n" :clock-in t :clock-resume t)
+          ("dm" "Meeting" entry (file+datetree org-journal-file)
+           "* %? :MEET:\n%U\n" :clock-in t :clock-resume t)
+
+          ;; Jots and Tiddles
+          ("j" "Jot" entry (file+headline org-jot-file "INBOX")
+           "* %? \n%U\n" :clock-in t :clock-resume t)))
 #+end_src
 
 Define some custom actions to take on completion or termination of a capture.
