@@ -833,6 +833,7 @@ anyhow.
      (add-hook 'org-mode-hook 'visual-line-mode)
      (add-hook 'org-mode-hook 'org-indent-mode)
      (add-hook 'org-mode-hook 'flyspell-mode)
+     (add-hook 'org-mode-hook 'org-title-mode)
      (add-to-list 'org-modules 'org-habit)
      :bind (("\C-c a" . org-agenda)
             ("\C-c c" . org-capture)
@@ -862,13 +863,15 @@ Enable LaTeX snippet highlighting.
   (setq org-highlight-latex-and-related '(latex script entities))
 #+end_src
 
-*** Paths
+** Paths
 Store my org files in =~/documents/org=, and derive my agenda from the proper documents.
 #+begin_src emacs-lisp
   (defun npg/org-file-path (filename)
     "Return the absolute address of an org file, given its relative name."
     (concat (file-name-as-directory org-directory) filename))
+#+end_src
 
+#+begin_src emacs-lisp
   (setq org-directory "~/org")
 
   (setq org-index-file (npg/org-file-path "index.org")
@@ -876,18 +879,19 @@ Store my org files in =~/documents/org=, and derive my agenda from the proper do
         org-notes-file (npg/org-file-path "notes.org")
         org-journal-file (npg/org-file-path "journal.org")
         org-caldav-inbox (npg/org-file-path "caldav.org")
-        org-course-root (npg/org-file-path "courses")
-        org-project-root (npg/org-file-path "projects")
         org-archive-location (concat
                               (npg/org-file-path "archive.org")
                               "::* From %s"))
+#+end_src
 
-    (setq org-agenda-files (list org-index-file
-                                 org-caldav-inbox
-                                 org-jot-file
-                                 org-journal-file
-                                 org-course-root
-                                 org-project-root))
+#+begin_src emacs-lisp
+  (setq org-agenda-files
+        (list org-index-file
+              org-caldav-inbox
+              org-jot-file
+              org-journal-file))
+
+  (op-register-agenda-files-function org-index-file)
 #+end_src
 
 ** Keys
