@@ -760,6 +760,22 @@ Note, however, that Org also uses these settings to show PDF previews.
                 #'yas-minor-mode))
 #+end_src
 
+Let's only show the compilation buffer when we have a compile problem.
+#+begin_src emacs-lisp
+  (defadvice TeX-LaTeX-sentinel
+      (around mg-TeX-LaTeX-sentinel-open-output activate)
+    "Open output when there are errors."
+    ;; Run `TeX-LaTeX-sentinel' as usual.
+    ad-do-it
+    ;; Check for the presence of errors.
+    (when
+        (with-current-buffer TeX-command-buffer
+          (plist-get TeX-error-report-switches (intern (TeX-master-file))))
+      ;; If there are errors, open the output buffer.
+      (with-temp-buffer
+        (TeX-recenter-output-buffer nil))))
+#+end_src
+
 Let's also not keep an =./auto= directory in every single source file directory.
 #+begin_src emacs-lisp
   (setq-default TeX-auto-local "~/.emacs.d/auctex-auto")
