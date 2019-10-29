@@ -136,6 +136,15 @@ See this [[https://emacs.stackexchange.com/questions/2189/how-can-i-prevent-a-co
      (current-buffer)))
 #+end_src
 
+** Remove Advice
+Quite useful when I am developing.
+#+begin_src emacs-lisp
+  (defun npg/advice-unadvice (sym)
+    "Remove all advices from symbol SYM."
+    (interactive "aFunction symbol: ")
+    (advice-mapc (lambda (advice _props) (advice-remove sym advice)) sym))
+#+end_src
+
 * System
 ** Internal Files
 Add a temporary customization file so any variable customizations we make won't clutter =init.el=.
