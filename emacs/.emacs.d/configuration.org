@@ -267,6 +267,8 @@ have buffer lists and a window configuration narrowed to a perspective.
 #+begin_src emacs-lisp
   (use-package perspective
     :init
+    (setq persp-show-modestring nil
+          persp-initial-frame-name "/")
     (persp-mode))
 #+end_src
 
