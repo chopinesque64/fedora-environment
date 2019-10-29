@@ -2207,6 +2207,7 @@ Let's access the Rhythmbox queue from a =counsel= minibuffer.
   (defun counsel-rhythmbox ()
     "Choose a song from the Rhythmbox library to play or enqueue."
     (interactive)
+    (use-package helm-rhythmbox)
     (unless (require 'helm-rhythmbox nil t)
       (error "Please install `helm-rhythmbox'"))
     (unless rhythmbox-library
