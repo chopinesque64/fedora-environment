@@ -8,3 +8,5 @@
 	program = gpg
 [core]
 	excludesfile = ~/.gitignore
+[credential]
+  helper = libsecret
