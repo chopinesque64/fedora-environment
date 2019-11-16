@@ -1,10 +1,10 @@
-# globally swap <CapsLk> and <Escape>
-/usr/bin/setxkbmap -option "caps:swapescape"
-
-
 # set some variables
 export GPG_TTY=$(tty)
-export PATH="$HOME/.local/bin:$HOME/.local/bin/my:$HOME/.cargo/bin:$PATH"
+export PATH="$HOME/.local/bin:$HOME/.local/bin/my:$HOME/.cargo/bin:$HOME/esp/xtensa-esp32-elf/bin:$PATH"
+
+# enable idf-path for microcontroller development
+export IDF_PATH="$HOME/esp/esp-idf"
+. $IDF_PATH/export.sh
 
 alias vi="vim"
 export EDITOR=vim
@@ -37,5 +37,6 @@ function cdl {
   fi
 }
 
-# heroku autocomplete setup
-HEROKU_AC_ZSH_SETUP_PATH=/home/npgentry/.cache/heroku/autocomplete/zsh_setup && test -f $HEROKU_AC_ZSH_SETUP_PATH && source $HEROKU_AC_ZSH_SETUP_PATH;
+function cdtemp {
+  cd $(mktemp -d)
+}
