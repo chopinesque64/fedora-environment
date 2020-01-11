@@ -33,13 +33,13 @@ initial-stations-loaded=true
 show-browser=true
 
 [podcast]
-download-location='file:///home/npgentry/Music'
+download-location='file:///home/npgentry/music'
 
 [podcast/source]
 show-browser=true
 
 [rhythmdb]
-locations=['file:///home/npgentry/Music']
+locations=['file:///home/npgentry/music']
 monitor-library=true
 
 [sources]
