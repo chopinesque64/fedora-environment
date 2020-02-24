@@ -33,7 +33,7 @@ initial-stations-loaded=true
 show-browser=true
 
 [podcast]
-download-location='file:///home/npgentry/music'
+download-location='file:///home/npgentry/podcast'
 
 [podcast/source]
 show-browser=true

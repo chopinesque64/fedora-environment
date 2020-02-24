@@ -1,0 +1,19 @@
+[/]
+document-directory=@ms nothing
+
+[default]
+continuous=true
+dual-page=false
+dual-page-odd-left=true
+fullscreen=false
+inverted-colors=false
+show-sidebar=false
+show-toolbar=true
+sidebar-page='thumbnails'
+sidebar-size=165
+sizing-mode='free'
+window-ratio=(3.1372549019607843, 1.255050505050505)
+zoom=0.69447149747448023
+
+[toolbar]
+show-expand-window=false

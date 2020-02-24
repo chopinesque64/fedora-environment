@@ -1,0 +1,10 @@
+
+[desktop]
+computer-icon-visible=false
+desktop-layout='false::false'
+home-icon-visible=false
+trash-icon-visible=false
+
+[preferences]
+show-edit-icon-toolbar=false
+show-location-entry=true
