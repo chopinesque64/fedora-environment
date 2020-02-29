@@ -124,3 +124,38 @@ cd -
 
 # Web-ext
 npm install web-ext
+
+# VirtualBox
+$install kernel-headers kernel-devel dkms elfutils-libelf-devel qt5-qtx11extras
+
+cat <<EOF | sudo tee /etc/yum.repos.d/virtualbox.repo
+[virtualbox]
+name=Fedora $releasever - $basearch - VirtualBox
+baseurl=http://download.virtualbox.org/virtualbox/rpm/fedora/29/\$basearch
+enabled=1
+gpgcheck=1
+repo_gpgcheck=1
+gpgkey=https://www.virtualbox.org/download/oracle_vbox.asc
+EOF
+
+sudo dnf search virtualbox
+$install VirtualBox-6.1
+sudo usermod -a -G vboxusers $USER
+newgrp vboxusers
+
+# KVM
+sudo dnf -y install bridge-utils libvirt virt-install qemu-kvm \
+     virt-top libguestfs-tools \
+     virt-manager
+
+sudo systemctl enable --now libvirtd
+
+
+# Gestures
+sudo dnf install xdotool wmctrl
+
+# Zotero
+zotero="~/zotero"
+wget -qO- 'https://download.zotero.org/client/release/5.0.84/Zotero-5.0.84_linux-x86_64.tar.bz2' | tar -C $zotero -xvj --strip-components=1
+$zotero/set_launcher_icon
+sudo ln -sf $zotero/zotero.desktop /usr/share/applications/
