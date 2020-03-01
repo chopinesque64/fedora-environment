@@ -16,6 +16,10 @@ function md {
   fi
 }
 
+function rurl {
+    curl $1 -s -L -I -o /dev/null -w '%{url_effective}'
+}
+
 function mdm {
   if [[ $# -ge 1 ]]; then
     md $1 || exit
