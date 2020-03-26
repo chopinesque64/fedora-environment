@@ -1,0 +1,7 @@
+[Default Applications]
+x-scheme-handler/msteams=teams.desktop
+application/pdf=org.gnome.Evince.desktop
+
+[Added Associations]
+application/xml=userapp-knime-Z909G0.desktop;
+application/pdf=org.gnome.Evince.desktop;
