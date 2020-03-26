@@ -23,13 +23,22 @@ $install \
     sdcv \
     wordnet \
     lilypond \
-    dconf-editor
+    dconf-editor \
+    the_silver_searcher \
+    evince
 
 $install \
     libreoffice \
-    gimp \
+    gimp
 
 sudo dnf groupinstall "Development Tools"
+
+stow .config --target=$HOME/.config
+
+# Conda
+TEMP=$(mktemp -d)
+wget -O $TEMP/conda.sh 'https://repo.anaconda.com/archive/Anaconda3-2019.10-Linux-x86_64.sh'
+$TEMP/conda.sh
 
 # Zsh
 wget -O ~/.zshrc https://git.grml.org/f/grml-etc-core/etc/zsh/zshrc
@@ -62,6 +71,8 @@ sudo dnf config-manager \
     https://download.docker.com/linux/fedora/docker-ce.repo
 $install docker-ce docker-ce-cli containerd.io
 sudo usermod -a -G docker $USER
+newgrp docker
+sudo systemctl enable --now docker
 
 # Rust
 type rustup >/dev/null 2>&1 || curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | zsh
@@ -159,3 +170,11 @@ zotero="~/zotero"
 wget -qO- 'https://download.zotero.org/client/release/5.0.84/Zotero-5.0.84_linux-x86_64.tar.bz2' | tar -C $zotero -xvj --strip-components=1
 $zotero/set_launcher_icon
 sudo ln -sf $zotero/zotero.desktop /usr/share/applications/
+
+# SageMath
+wget http://mirrors.mit.edu/sage/linux/64bit/sage-9.0-Debian_GNU_Linux_10-x86_64.tar.bz2 | tar -C $HOME -xvj
+jupyter kernelspec install --user ~/SageMath/local/share/jupyter/kernels/sagemath
+
+# R/RStudio
+$install 'https://download1.rstudio.org/desktop/fedora28/x86_64/rstudio-1.2.5033-x86_64.rpm'
+$install R
