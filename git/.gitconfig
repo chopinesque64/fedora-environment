@@ -1,12 +1,14 @@
 [user]
 	name = Nathanael Gentry
-	email = ngentry1@liberty.edu
-	signingkey = 3F84B28E60D98EF7
+	email = nathanael.gentrydb8@gmail.com
+	signingkey = AEF0884E3C005C5B
 [commit]
 	gpgsign = true
 [gpg]
-	program = gpg
+	program = gpg2
 [core]
 	excludesfile = ~/.gitignore
 [credential]
   helper = libsecret
+[url "git@github.com:"]
+	insteadOf = https://github.com/
