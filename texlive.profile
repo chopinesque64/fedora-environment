@@ -2,12 +2,8 @@
 # It will NOT be updated and reflects only the
 # installation profile at installation time.
 selected_scheme scheme-full
-TEXDIR /home/npgentry/texlive/2019
 TEXMFCONFIG ~/.texlive2019/texmf-config
 TEXMFHOME ~/texmf
-TEXMFLOCAL /home/npgentry/texlive/texmf-local
-TEXMFSYSCONFIG /home/npgentry/texlive/2019/texmf-config
-TEXMFSYSVAR /home/npgentry/texlive/2019/texmf-var
 TEXMFVAR ~/.texlive2019/texmf-var
 binary_x86_64-linux 1
 instopt_adjustpath 0
