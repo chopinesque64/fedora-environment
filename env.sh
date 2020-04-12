@@ -110,8 +110,8 @@ ln -s $HOME/Dropbox/org $HOME/org
 ln -s $HOME/org/wall.jpg $HOME/
 ln -s $HOME/org/face $HOME/
 dconf load /org/cinnamon/ < dconf/cinnamon.dconf
-dconf load /org/gnome < dconf/gnome.dconf
-dconf load /org/nemo < dconf/nemo.dconf
+dconf load /org/gnome/ < dconf/gnome.dconf
+dconf load /org/nemo/ < dconf/nemo.dconf
 
 # Emacs
 sudo ln -s /usr/share/applications/emacs.desktop ~/.config/autostart/
@@ -124,10 +124,10 @@ ln -s $HOME/org/data/83/26ca46-77b6-44f3-9907-e7a820ac3ae6/.stardict $HOME/
 
 # TeX Live
 TEMP=$(mktemp -d)
-wget -qO- http://mirror.ctan.org/systems/texlive/tlnet/install-tl-unx.tar.gz | tar -C $TEMP -xvz --strip-components=1
+wget -qO- 'http://mirror.ctan.org/systems/texlive/tlnet/install-tl-unx.tar.gz' | tar -C $TEMP -xvz --strip-components=1
 $TEMP/install-tl -profile texlive.profile
 
-texmf_dir = $HOME/texmf/tex/latex
+texmf_dir=$HOME/texmf/tex/latex
 mkdir -p $texmf_dir
 cd $HOME/org/data/b6/5cc287-4ab8-414f-92d0-d7e74d84ed9d/tex-a-tac
 stow local --target=$texmf_dir
@@ -160,7 +160,6 @@ sudo dnf -y install bridge-utils libvirt virt-install qemu-kvm \
      virt-manager
 
 sudo systemctl enable --now libvirtd
-
 
 # Gestures
 sudo dnf install xdotool wmctrl
