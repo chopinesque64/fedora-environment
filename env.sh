@@ -4,6 +4,8 @@ install="sudo dnf install -y"
 stow="stow --target=$HOME"
 bin_dir="$HOME/bin"
 
+sudo dnf update -y
+
 # Home directory setup
 rm -r ~/{Documents,Downloads,Music,Pictures,Public,Templates,Videos}
 ln -s /run/media/$USER ~/media
@@ -11,6 +13,8 @@ ln -s /run/media/$USER ~/media
 mkdir -p jupyter
 
 # Global software
+$install 'https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm'
+
 $install \
     dnf-plugins-core \
     snapd \
@@ -23,11 +27,12 @@ $install \
     sdcv \
     wordnet \
     lilypond \
+		frescobaldi \
+		BasiliskII \
     dconf-editor \
     the_silver_searcher \
-    evince
-
-$install \
+    evince \
+		xclip \
     libreoffice \
     gimp
 
@@ -83,18 +88,14 @@ rustup component add rust-src
 # Rhythmbox
 dconf load /org/gnome/rhythmbox/ < dconf/rhythmbox.dconf
 
-# Xreader
-dconf load /org/x/reader/ < dconf/xreader.dconf
-
 # Node.js
 curl -sL https://rpm.nodesource.com/setup_12.x | sudo -E bash -
 sudo dnf install -y nodejs
 
 # Jupyter Lab
 pip install jupyterlab --user
-
-# Teams for Linux
-sudo snap install teams-for-linux
+jupyter labextension install @jupyter-widgets/jupyterlab-manager
+jupyter labextension install jupyter-matplotlib
 
 # Chrome
 $install fedora-workstation-repositories
@@ -169,6 +170,7 @@ zotero="~/zotero"
 wget -qO- 'https://download.zotero.org/client/release/5.0.84/Zotero-5.0.84_linux-x86_64.tar.bz2' | tar -C $zotero -xvj --strip-components=1
 $zotero/set_launcher_icon
 sudo ln -sf $zotero/zotero.desktop /usr/share/applications/
+wget 'https://github.com/retorquere/zotero-better-bibtex/releases/download/v5.2.20/zotero-better-bibtex-5.2.20.xpi' -P ~/zotero/extensions
 
 # SageMath
 wget http://mirrors.mit.edu/sage/linux/64bit/sage-9.0-Debian_GNU_Linux_10-x86_64.tar.bz2 | tar -C $HOME -xvj
@@ -177,3 +179,14 @@ jupyter kernelspec install --user ~/SageMath/local/share/jupyter/kernels/sagemat
 # R/RStudio
 $install 'https://download1.rstudio.org/desktop/fedora28/x86_64/rstudio-1.2.5033-x86_64.rpm'
 $install R
+
+# Haskell
+curl --proto '=https' --tlsv1.2 -sSf https://get-ghcup.haskell.org | sh
+
+# GNU Global
+$install global
+
+# Discord
+sudo dnf copr enable tcg/discord
+sudo dnf install discord-installer -y
+sudo systemctl enable --now discord-installer

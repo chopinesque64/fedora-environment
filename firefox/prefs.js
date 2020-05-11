@@ -9,28 +9,8 @@
 // - modify it via the UI (e.g. via about:config in the browser); or
 // - set it within a user.js file in your profile.
 
-user_pref("accessibility.typeaheadfind.flashBar", 0);
-user_pref("app.normandy.first_run", false);
-user_pref("app.normandy.user_id", "4ebba8fb-b98a-41c8-af7a-ea53caac658e");
-user_pref("app.update.lastUpdateTime.addon-background-update-timer", 1566660052);
-user_pref("app.update.lastUpdateTime.blocklist-background-update-timer", 1566660172);
-user_pref("app.update.lastUpdateTime.browser-cleanup-thumbnails", 1566667974);
-user_pref("app.update.lastUpdateTime.recipe-client-addon-run", 1566659812);
-user_pref("app.update.lastUpdateTime.search-engine-update-timer", 1566659692);
-user_pref("app.update.lastUpdateTime.services-settings-poll-changes", 1566659932);
-user_pref("app.update.lastUpdateTime.telemetry_modules_ping", 1566660414);
-user_pref("app.update.lastUpdateTime.xpi-signature-verification", 1566660294);
 user_pref("browser.bookmarks.restore_default_bookmarks", false);
-user_pref("browser.cache.disk.amount_written", 128666);
-user_pref("browser.cache.disk.capacity", 1048576);
-user_pref("browser.cache.disk.filesystem_reported", 1);
-user_pref("browser.cache.disk.smart_size.first_run", false);
-user_pref("browser.contentblocking.category", "standard");
 user_pref("browser.download.panel.shown", true);
-user_pref("browser.laterrun.bookkeeping.profileCreationTime", 1566673941);
-user_pref("browser.laterrun.bookkeeping.sessionCount", 6);
-user_pref("browser.laterrun.enabled", true);
-user_pref("browser.migration.version", 81);
 user_pref("browser.newtabpage.activity-stream.feeds.section.topstories.rec.impressions", "{\"44417\":1566660979688,\"44430\":1566661772856,\"44432\":1566669700681,\"44445\":1566660979688,\"44447\":1566668185003,\"44449\":1566668185003}");
 user_pref("browser.newtabpage.activity-stream.feeds.section.topstories.spoc.impressions", "{\"1924\":[1566668249622],\"1928\":[1566668473181,1566668716555,1566669620584,1566669700787,1566669705726,1566669745933],\"1933\":[1566660979687,1566661276108,1566661772978,1566661877449,1566667783038,1566668185003]}");
 user_pref("browser.newtabpage.activity-stream.impressionId", "{600c16d2-07cc-4716-94c2-7eeb89dd41af}");
@@ -55,7 +35,7 @@ user_pref("browser.slowStartup.samples", 1);
 user_pref("browser.startup.homepage_override.buildID", "20190814182745");
 user_pref("browser.startup.homepage_override.mstone", "68.0.2");
 user_pref("browser.startup.lastColdStartupCheck", 1566669699);
-user_pref("browser.tabs.drawInTitlebar", true);
+user_pref("browser.tabs.drawInTitlebar", rue);
 user_pref("browser.tabs.warnOnClose", false);
 user_pref("browser.uiCustomization.state", "{\"placements\":{\"widget-overflow-fixed-list\":[\"jid1-niffy2ca8fy1tg_jetpack-browser-action\"],\"nav-bar\":[\"back-button\",\"forward-button\",\"urlbar-container\",\"fxa-toolbar-menu-button\"],\"toolbar-menubar\":[\"menubar-items\"],\"TabsToolbar\":[\"tabbrowser-tabs\",\"alltabs-button\"],\"PersonalToolbar\":[]},\"seen\":[\"developer-button\",\"webide-button\",\"jid1-niffy2ca8fy1tg_jetpack-browser-action\"],\"dirtyAreaCache\":[\"nav-bar\",\"toolbar-menubar\",\"TabsToolbar\",\"PersonalToolbar\",\"widget-overflow-fixed-list\"],\"currentVersion\":16,\"newElementCount\":4}");
 user_pref("browser.urlbar.placeholderName", "Google");

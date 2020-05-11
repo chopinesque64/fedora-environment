@@ -3,12 +3,16 @@
 	email = nathanael.gentrydb8@gmail.com
 	signingkey = AEF0884E3C005C5B
 [commit]
-	gpgsign = true
+	gpgsign = false
 [gpg]
-	program = gpg2
+	program = gpg
 [core]
 	excludesfile = ~/.gitignore
 [credential]
   helper = libsecret
 [url "git@github.com:"]
 	insteadOf = https://github.com/
+[github]
+	user = npjg
+[pull]
+	rebase = true

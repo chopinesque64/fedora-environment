@@ -1,10 +1,22 @@
 # set some variables
 export GPG_TTY=$(tty)
 export PATH="$HOME/.local/bin:$HOME/.local/bin/my:$HOME/.cargo/bin:$HOME/esp/xtensa-esp32-elf/bin:$PATH"
+export IDF_PATH="$HOME/esp/esp-idf"
+alias ccc="xclip -sel clip"
 
 # enable idf-path for microcontroller development
-export IDF_PATH="$HOME/esp/esp-idf"
-. $IDF_PATH/export.sh
+# >>> idf initialize >>>
+function idf_init {
+  export IDF_UNLOAD="$PATH"
+  . $IDF_PATH/export.sh # >/dev/null 2>&1
+  alias idf='$IDF_PATH/tools/idf.py'
+}
+
+function idf_unload {
+  export PATH="$IDF_UNLOAD"
+  unalias idf
+}
+# <<< idf initialize <<<
 
 alias vi="vim"
 export EDITOR=vim
